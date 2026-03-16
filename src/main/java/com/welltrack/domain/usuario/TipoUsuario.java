@@ -1,4 +1,4 @@
-package com.welltrack.model.usuario;
+package com.welltrack.domain.usuario;
 
 public enum TipoUsuario {
     ADMIN,

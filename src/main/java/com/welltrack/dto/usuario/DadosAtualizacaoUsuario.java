@@ -1,6 +1,5 @@
 package com.welltrack.dto.usuario;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
@@ -21,6 +20,10 @@ public record DadosAtualizacaoUsuario(
         BigDecimal altura,
 
         String email,
+
+        String senha,
+
+        String celular,
 
         String logradouro,
 

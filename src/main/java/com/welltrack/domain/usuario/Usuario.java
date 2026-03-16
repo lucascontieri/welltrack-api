@@ -1,4 +1,4 @@
-package com.welltrack.model.usuario;
+package com.welltrack.domain.usuario;
 
 import com.welltrack.dto.usuario.DadosAtualizacaoUsuario;
 import com.welltrack.dto.usuario.DadosCadastroUsuario;
@@ -8,9 +8,14 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 // Mapeando a entidade JPA 'Usuario' no banco de dados PostgreSQL na tabela 'tabelaUsuario'
@@ -21,7 +26,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode(of = "idUsuario")
 
-public class Usuario {
+public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -30,6 +35,7 @@ public class Usuario {
 
     private String nome;
 
+    @Column(unique = true)
     private String cpf;
 
     @Enumerated(EnumType.STRING)
@@ -64,6 +70,45 @@ public class Usuario {
     private Boolean ativo;
 
     private String imagemUsuario;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (TipoUsuario.ADMIN.equals(this.tipoUsuario)) {
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        } else {
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        }
+    }
+
+    @Override
+    public String getPassword() {
+        return this.senha; // Retorna a senha do usuário
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email; // Retorna o email como nome de usuário
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true; // Define se a conta não está expirada
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true; // Define se a conta não está bloqueada
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true; // Define se as credenciais não estão expiradas
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.ativo; // Define se a conta está ativa
+    }
 
     public Usuario(DadosCadastroUsuario dados) {
         this.ativo = true;
@@ -105,6 +150,14 @@ public class Usuario {
 
         if (dados.email() != null) {
             this.email = dados.email();
+        }
+
+        if (dados.senha() != null) {
+            this.senha = dados.senha();
+        }
+
+        if (dados.celular() != null) {
+            this.celular = dados.celular();
         }
 
         if (dados.logradouro() != null) {
