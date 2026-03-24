@@ -3,20 +3,20 @@
 -- =====================================================
 CREATE TABLE usuario (
                          id_usuario UUID PRIMARY KEY,
-                         nome VARCHAR(70) NOT NULL,
+                         nome VARCHAR(150) NOT NULL,
                          cpf VARCHAR(11) UNIQUE,
                          tipo_usuario VARCHAR(50) NOT NULL,
                          data_nascimento DATE NOT NULL,
                          peso DECIMAL(5,2),
                          altura DECIMAL(3,2),
-                         email VARCHAR(50) NOT NULL UNIQUE,
+                         email VARCHAR(255) NOT NULL UNIQUE,
                          senha VARCHAR(255) NOT NULL,
                          celular VARCHAR(20),
-                         logradouro VARCHAR(50),
+                         logradouro VARCHAR(150),
                          numero INTEGER,
-                         complemento VARCHAR(50),
-                         bairro VARCHAR(50),
-                         cidade VARCHAR(50),
+                         complemento VARCHAR(100),
+                         bairro VARCHAR(100),
+                         cidade VARCHAR(100),
                          estado CHAR(2),
                          cep CHAR(8),
                          imagem_usuario VARCHAR(500)
@@ -49,7 +49,7 @@ CREATE TABLE grupo_muscular (
 -- =====================================================
 CREATE TABLE exercicio (
                            id_exercicio UUID PRIMARY KEY,
-                           nome_exercicio VARCHAR(50) NOT NULL,
+                           nome_exercicio VARCHAR(150) NOT NULL,
                            imagem_exercicio VARCHAR(500),
                            video_exercicio VARCHAR(500),
                            id_grupo UUID NOT NULL,
@@ -105,11 +105,11 @@ CREATE TABLE registro_treino (
 -- =====================================================
 CREATE TABLE alimento (
                           id_alimento UUID PRIMARY KEY,
-                          nome_alimento VARCHAR(50) NOT NULL,
+                          nome_alimento VARCHAR(150) NOT NULL,
                           carboidrato DECIMAL(6,2),
                           proteina DECIMAL(6,2),
                           gordura DECIMAL(6,2),
-                          unidade_padrao VARCHAR(10) NOT NULL,
+                          unidade_padrao VARCHAR(20) NOT NULL,
                           peso_porcao DECIMAL(7,2) NOT NULL,
                           calorias DECIMAL(6,2) NOT NULL,
                           imagem_alimento VARCHAR(500),
@@ -123,9 +123,9 @@ CREATE TABLE alimento (
 CREATE TABLE refeicao (
                           id_refeicao UUID PRIMARY KEY,
                           nome_refeicao VARCHAR(100) NOT NULL,
-                          data DATE,
                           horario TIME,
-                          data_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                          tipo_recorrencia VARCHAR(30),
+                          dias_personalizados JSONB,
                           imagem_refeicao VARCHAR(500),
                           id_usuario UUID NOT NULL,
                           FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
@@ -150,7 +150,6 @@ CREATE TABLE refeicao_alimento (
 CREATE TABLE lista (
                        id_lista UUID PRIMARY KEY,
                        nome_lista VARCHAR(50) NOT NULL,
-                       data_criacao TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                        id_usuario UUID NOT NULL,
                        FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
