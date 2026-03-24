@@ -1,5 +1,12 @@
 package com.welltrack.domain.usuario;
 
+import com.welltrack.domain.alimento.Alimento;
+import com.welltrack.domain.exercicio.Exercicio;
+import com.welltrack.domain.lista.Lista;
+import com.welltrack.domain.refeicao.Refeicao;
+import com.welltrack.domain.registrotreino.RegistroTreino;
+import com.welltrack.domain.tokenrecuperacao.TokenRecuperacao;
+import com.welltrack.domain.treino.Treino;
 import com.welltrack.dto.usuario.DadosAtualizacaoUsuario;
 import com.welltrack.dto.usuario.DadosCadastroUsuario;
 import jakarta.persistence.*;
@@ -14,12 +21,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-// Mapeando a entidade JPA 'Usuario' no banco de dados PostgreSQL na tabela 'tabelaUsuario'
-@Entity(name = "Usuario")
+// Mapeando a entidade JPA 'Usuario' no banco de dados PostgreSQL na tabela 'Usuario'
+@Entity
 @Table(name = "Usuario")
 @Getter
 @NoArgsConstructor
@@ -33,43 +41,81 @@ public class Usuario implements UserDetails {
     @Column(name = "id_usuario")
     private UUID idUsuario;
 
+    @Column(nullable = false, length = 150)
     private String nome;
 
-    @Column(unique = true)
+    @Column(unique = true, length = 11)
     private String cpf;
 
     @Enumerated(EnumType.STRING)
     private TipoUsuario tipoUsuario = TipoUsuario.USER;
 
+    @Column(nullable = false)
     private LocalDate dataNascimento;
 
+    @Column(precision = 5, scale = 2)
     private BigDecimal peso;
 
+    @Column(precision = 3, scale = 2)
     private BigDecimal altura;
 
+    @Column(nullable = false, unique = true)
     private String email;
 
     private String senha;
 
+    @Column(length = 20)
     private String celular;
 
+    @Column(length = 150)
     private String logradouro;
 
     private Integer numero;
 
+    @Column(length = 100)
     private String complemento;
 
+    @Column(length = 100)
     private String bairro;
 
+    @Column(length = 100)
     private String cidade;
 
+    @Column(length = 2)
     private String estado;
 
+    @Column(length = 8)
     private String cep;
+
+    @Column(length = 500)
+    private String imagemUsuario;
 
     private Boolean ativo;
 
-    private String imagemUsuario;
+    // Mapeando os relacionamentos
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private List<TokenRecuperacao> tokens;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private List<Exercicio> exercicios;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private List<Treino> treinos;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private List<RegistroTreino> registrosTreino;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private List<Alimento> alimentos;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private List<Refeicao> refeicoes;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private List<Lista> listas;
+
+    // ----------------------------------------------------------------
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -148,10 +194,6 @@ public class Usuario implements UserDetails {
             this.altura = dados.altura();
         }
 
-        if (dados.email() != null) {
-            this.email = dados.email();
-        }
-
         if (dados.senha() != null) {
             this.senha = dados.senha();
         }
@@ -195,5 +237,9 @@ public class Usuario implements UserDetails {
 
     public void inativar() {
         this.ativo = false;
+    }
+
+    public void ativar() {
+        this.ativo = true;
     }
 }
