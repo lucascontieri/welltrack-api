@@ -25,4 +25,9 @@ public class GrupoMuscular {
     @Column(nullable = false, length = 50)
     private String nome_grupo_muscular;
 
+    public void atualizar(com.welltrack.dto.grupomuscular.DadosAtualizacaoGrupoMuscular dados) {
+        if (dados.nome_grupo_muscular() != null) {
+            this.nome_grupo_muscular = dados.nome_grupo_muscular();
+        }
+    }
 }

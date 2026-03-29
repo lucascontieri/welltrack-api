@@ -48,5 +48,27 @@ public class Refeicao {
     private Usuario usuario;
 
     @OneToMany(mappedBy = "refeicao", cascade = CascadeType.ALL)
-    private List<RefeicaoAlimento> alimentos;
+    private List<RefeicaoAlimento> refeicaoAlimentos;
+
+    public void atualizar(com.welltrack.dto.refeicao.DadosAtualizacaoRefeicao dados) {
+        if (dados.nomeRefeicao() != null) {
+            this.nomeRefeicao = dados.nomeRefeicao();
+        }
+
+        if (dados.horario() != null) {
+            this.horario = dados.horario();
+        }
+
+        if (dados.tipoRecorrencia() != null) {
+            this.tipoRecorrencia = dados.tipoRecorrencia();
+        }
+
+        if (dados.diasPersonalizados() != null) {
+            this.diasPersonalizados = dados.diasPersonalizados();
+        }
+
+        if (dados.imagemRefeicao() != null) {
+            this.imagemRefeicao = dados.imagemRefeicao();
+        }
+    }
 }

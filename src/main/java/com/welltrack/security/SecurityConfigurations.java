@@ -29,6 +29,7 @@ public class SecurityConfigurations {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Configura autenticação sem estado (JWT)
                 .authorizeHttpRequests(req -> req
                         .requestMatchers(HttpMethod.POST, "/login").permitAll() // Permite acesso público ao login
+                        .requestMatchers("/v3/api-docs/**", "swagger-ui.html", "swagger-ui/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/{idUsuario}").hasRole("ADMIN")
                         .anyRequest().authenticated() // Qualquer outra requisição precisa estar autenticada
                 )

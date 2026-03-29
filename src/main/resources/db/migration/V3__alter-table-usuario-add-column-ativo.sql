@@ -1,1 +1,2 @@
-ALTER TABLE Usuario ADD ativo BOOLEAN;
+ALTER TABLE Usuario
+    ADD ativo BOOLEAN;

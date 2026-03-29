@@ -1,2 +1,2 @@
 ALTER TABLE Usuario
-ALTER COLUMN tipo_usuario SET DEFAULT 'USER';
+    ALTER COLUMN tipo_usuario SET DEFAULT 'USER';

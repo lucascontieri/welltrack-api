@@ -21,7 +21,7 @@ import java.util.UUID;
 public class TreinoExercicio {
 
     @EmbeddedId
-    private TreinoExercicioId id;
+    private idTreinoExercicio id;
 
     @Column
     private Integer serieExercicio;
@@ -48,8 +48,30 @@ public class TreinoExercicio {
     @JoinColumn(name = "id_exercicio")
     private Exercicio exercicio;
 
+    public void atualizar(com.welltrack.dto.treinoexercicio.DadosAtualizacaoTreinoExercicio dados) {
+        if (dados.serieExercicio() != null) {
+            this.serieExercicio = dados.serieExercicio();
+        }
+
+        if (dados.descanso() != null) {
+            this.descanso = dados.descanso();
+        }
+
+        if (dados.carga() != null) {
+            this.carga = dados.carga();
+        }
+
+        if (dados.repeticoes() != null) {
+            this.repeticoes = dados.repeticoes();
+        }
+
+        if (dados.ordem() != null) {
+            this.ordem = dados.ordem();
+        }
+    }
+
     @Embeddable
-    public static class TreinoExercicioId implements Serializable {
+    public static class idTreinoExercicio implements Serializable {
 
         @Column(name = "id_treino")
         private UUID idTreino;

@@ -42,4 +42,22 @@ public class Tarefa {
 
     @OneToMany(mappedBy = "tarefa", cascade = CascadeType.ALL)
     private List<TarefaBloco> blocos;
+
+    public void atualizar(com.welltrack.dto.tarefa.DadosAtualizacaoTarefa dados) {
+        if (dados.descricao() != null) {
+            this.descricao = dados.descricao();
+        }
+
+        if (dados.status() != null) {
+            this.status = dados.status();
+        }
+
+        if (dados.prazoMaximo() != null) {
+            this.prazoMaximo = dados.prazoMaximo();
+        }
+
+        if (dados.imagemTarefa() != null) {
+            this.imagemTarefa = dados.imagemTarefa();
+        }
+    }
 }
