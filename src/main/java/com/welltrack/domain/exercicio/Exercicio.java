@@ -9,7 +9,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,4 +44,22 @@ public class Exercicio {
 
     @OneToMany(mappedBy = "exercicio", cascade = CascadeType.ALL)
     private List<TreinoExercicio> treinos;
+
+    public void atualizar(com.welltrack.dto.exercicio.DadosAtualizacaoExercicio dados) {
+        if (dados.nomeExercicio() != null) {
+            this.nomeExercicio = dados.nomeExercicio();
+        }
+
+        if (dados.imagemExercicio() != null) {
+            this.imagemExercicio = dados.imagemExercicio();
+        }
+
+        if (dados.videoExercicio() != null) {
+            this.videoExercicio = dados.videoExercicio();
+        }
+
+        if (dados.idGrupo() != null) {
+            this.grupoMuscular = new GrupoMuscular(dados.idGrupo(), null);
+        }
+    }
 }

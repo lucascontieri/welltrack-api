@@ -8,7 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,4 +33,10 @@ public class Lista {
 
     @OneToMany(mappedBy = "lista", cascade = CascadeType.ALL)
     private List<Tarefa> tarefas;
+
+    public void atualizar(com.welltrack.dto.lista.DadosAtualizacaoLista dados) {
+        if (dados.nomeLista() != null) {
+            this.nomeLista = dados.nomeLista();
+        }
+    }
 }

@@ -40,4 +40,26 @@ public class TokenRecuperacao {
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
+
+    public void atualizar(com.welltrack.dto.tokenrecuperacao.DadosAtualizacaoTokenRecuperacao dados) {
+        if (dados.token() != null) {
+            this.token = dados.token();
+        }
+
+        if (dados.expiracao() != null) {
+            this.expiracao = dados.expiracao();
+        }
+
+        if (dados.usado() != null) {
+            this.usado = dados.usado();
+        }
+
+        if (dados.tentativas() != null) {
+            this.tentativas = dados.tentativas();
+        }
+
+        if (dados.dataCriacao() != null) {
+            this.dataCriacao = dados.dataCriacao();
+        }
+    }
 }

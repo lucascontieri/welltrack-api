@@ -39,4 +39,14 @@ public class Treino {
 
     @OneToMany(mappedBy = "treino", cascade = CascadeType.ALL)
     private List<RegistroTreino> registros;
+
+    public void atualizar(com.welltrack.dto.treino.DadosAtualizacaoTreino dados) {
+        if (dados.nomeTreino() != null) {
+            this.nomeTreino = dados.nomeTreino();
+        }
+
+        if (dados.dataTreino() != null) {
+            this.dataTreino = dados.dataTreino();
+        }
+    }
 }

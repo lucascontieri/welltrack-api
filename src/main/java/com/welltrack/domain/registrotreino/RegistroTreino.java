@@ -17,7 +17,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "idRegistroTreino")
+@EqualsAndHashCode(of = "idRegistro")
 public class RegistroTreino {
 
     @Id
@@ -42,4 +42,22 @@ public class RegistroTreino {
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
+
+    public void atualizar(com.welltrack.dto.registrotreino.DadosAtualizacaoRegistroTreino dados) {
+        if (dados.dataExecucao() != null) {
+            this.dataExecucao = dados.dataExecucao();
+        }
+
+        if (dados.horaEntrada() != null) {
+            this.horaEntrada = dados.horaEntrada();
+        }
+
+        if (dados.horaSaida() != null) {
+            this.horaSaida = dados.horaSaida();
+        }
+
+        if (dados.concluido() != null) {
+            this.concluido = dados.concluido();
+        }
+    }
 }

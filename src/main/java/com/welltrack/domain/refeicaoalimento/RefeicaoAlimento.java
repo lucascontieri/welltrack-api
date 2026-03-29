@@ -21,7 +21,7 @@ import java.util.UUID;
 public class RefeicaoAlimento {
 
     @EmbeddedId
-    private RefeicaoAlimentoId id;
+    private idRefeicaoAlimento id;
 
     @Column(nullable = false, precision = 7, scale = 2)
     private BigDecimal quantidade;
@@ -39,9 +39,22 @@ public class RefeicaoAlimento {
     @JoinColumn(name = "id_alimento")
     private Alimento alimento;
 
+    public void atualizar(com.welltrack.dto.refeicaoalimento.DadosAtualizacaoRefeicaoAlimento dados) {
+        if (dados.quantidade() != null) {
+            this.quantidade = dados.quantidade();
+        }
+
+        if (dados.unidadeMedida() != null) {
+            this.unidadeMedida = dados.unidadeMedida();
+        }
+    }
 
     @Embeddable
-    public static class RefeicaoAlimentoId implements Serializable {
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    public static class idRefeicaoAlimento implements Serializable {
 
         @Column(name = "id_refeicao")
         private UUID idRefeicao;

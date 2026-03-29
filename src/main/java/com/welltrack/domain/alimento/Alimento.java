@@ -49,4 +49,38 @@ public class Alimento {
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
+
+    public void atualizar(com.welltrack.dto.alimento.DadosAtualizacaoAlimento dados) {
+        if (dados.nomeAlimento() != null) {
+            this.nomeAlimento = dados.nomeAlimento();
+        }
+
+        if (dados.carboidrato() != null) {
+            this.carboidrato = dados.carboidrato();
+        }
+
+        if (dados.proteina() != null) {
+            this.proteina = dados.proteina();
+        }
+
+        if (dados.gordura() != null) {
+            this.gordura = dados.gordura();
+        }
+
+        if (dados.unidadePadrao() != null) {
+            this.unidadePadrao = dados.unidadePadrao();
+        }
+
+        if (dados.pesoPorcao() != null) {
+            this.pesoPorcao = dados.pesoPorcao();
+        }
+
+        if (dados.calorias() != null) {
+            this.calorias = dados.calorias();
+        }
+
+        if (dados.imagemAlimento() != null) {
+            this.imagemAlimento = dados.imagemAlimento();
+        }
+    }
 }

@@ -16,7 +16,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "idTarefaBloco")
+@EqualsAndHashCode(of = "idBloco")
 public class TarefaBloco {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -43,4 +43,26 @@ public class TarefaBloco {
     @ManyToOne
     @JoinColumn(name = "id_tarefa", nullable = false)
     private Tarefa tarefa;
+
+    public void atualizar(com.welltrack.dto.tarefabloco.DadosAtualizacaoTarefaBloco dados) {
+        if (dados.tipo() != null) {
+            this.tipo = dados.tipo();
+        }
+
+        if (dados.conteudo() != null) {
+            this.conteudo = dados.conteudo();
+        }
+
+        if (dados.ordem() != null) {
+            this.ordem = dados.ordem();
+        }
+
+        if (dados.propriedades() != null) {
+            this.propriedades = dados.propriedades();
+        }
+
+        if (dados.idPai() != null) {
+            this.pai = new TarefaBloco(dados.idPai(), null, null, null, null, null, null);
+        }
+    }
 }

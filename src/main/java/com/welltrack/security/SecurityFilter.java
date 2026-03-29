@@ -1,7 +1,6 @@
 package com.welltrack.security;
 
 import com.welltrack.repository.usuario.UsuarioRepository;
-import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,8 +25,6 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        System.out.println("CHAMANDO FILTER");
-
         var tokenJWT = recuperarToken(request);
 
         if (tokenJWT != null) {
@@ -36,7 +33,6 @@ public class SecurityFilter extends OncePerRequestFilter {
 
             var authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            System.out.println("LOGADO NA REQUISIÇÃO");
         }
 
         // Necessário para chamar os próximos filtros na aplicação
