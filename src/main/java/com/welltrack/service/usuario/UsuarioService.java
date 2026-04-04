@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.UUID;
 
@@ -19,6 +20,9 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository repository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private void validarAutorizacao(UUID idAlvo, Usuario usuarioLogado) {
         if (!idAlvo.equals(usuarioLogado.getIdUsuario()) && !TipoUsuario.ADMIN.equals(usuarioLogado.getTipoUsuario())) {
@@ -29,6 +33,7 @@ public class UsuarioService {
     public Usuario cadastrar(DadosCadastroUsuario dados) {
         // Cadastro é público (qualquer pessoa cria sua própria conta sem estar logado)
         var usuario = new Usuario(dados);
+        usuario.setSenha(passwordEncoder.encode(dados.senha()));
         return repository.save(usuario);
     }
 
@@ -40,6 +45,9 @@ public class UsuarioService {
         validarAutorizacao(dados.idUsuario(), usuarioLogado);
         var usuario = repository.getReferenceById(dados.idUsuario());
         usuario.atualizarInformacoes(dados);
+        if (dados.senha() != null) {
+            usuario.setSenha(passwordEncoder.encode(dados.senha()));
+        }
         return usuario;
     }
 

@@ -241,4 +241,8 @@ public class Usuario implements UserDetails {
     public void ativar() {
         this.ativo = true;
     }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
 }
