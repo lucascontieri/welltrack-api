@@ -4,7 +4,9 @@ import com.welltrack.domain.usuario.Usuario;
 import com.welltrack.dto.alimento.DadosAtualizacaoAlimento;
 import com.welltrack.dto.alimento.DadosCadastroAlimento;
 import com.welltrack.dto.alimento.DadosDetalhamentoAlimento;
+import com.welltrack.dto.alimento.DadosAlimentoPorCodigoDeBarras;
 import com.welltrack.service.alimento.AlimentoService;
+import com.welltrack.service.integracao.OpenFoodFactsService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +28,14 @@ public class AlimentoController {
     @Autowired
     private AlimentoService service;
 
+    @Autowired
+    private OpenFoodFactsService openFoodFactsService;
+
     @PostMapping
     @Transactional
     public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastroAlimento dados,
-                                    @AuthenticationPrincipal Usuario usuarioLogado,
-                                    UriComponentsBuilder uriBuilder) {
+            @AuthenticationPrincipal Usuario usuarioLogado,
+            UriComponentsBuilder uriBuilder) {
 
         var alimento = service.cadastrar(dados, usuarioLogado);
         var uri = uriBuilder.path("/alimento/{id}").buildAndExpand(alimento.getIdAlimento()).toUri();
@@ -40,8 +45,8 @@ public class AlimentoController {
 
     @GetMapping
     public ResponseEntity listar(@RequestParam UUID idUsuario,
-                                 @AuthenticationPrincipal Usuario usuarioLogado,
-                                 @PageableDefault(size = 10, sort = {"nomeAlimento"}) Pageable paginacao) {
+            @AuthenticationPrincipal Usuario usuarioLogado,
+            @PageableDefault(size = 10, sort = { "nomeAlimento" }) Pageable paginacao) {
         var page = service.listar(idUsuario, paginacao, usuarioLogado);
         return ResponseEntity.ok(page);
     }
@@ -54,7 +59,8 @@ public class AlimentoController {
 
     @PutMapping
     @Transactional
-    public ResponseEntity atualizar(@RequestBody @Valid DadosAtualizacaoAlimento dados, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity atualizar(@RequestBody @Valid DadosAtualizacaoAlimento dados,
+            @AuthenticationPrincipal Usuario usuarioLogado) {
         var alimento = service.atualizar(dados, usuarioLogado);
         return ResponseEntity.ok(new DadosDetalhamentoAlimento(alimento));
     }
@@ -65,5 +71,11 @@ public class AlimentoController {
         service.deletar(idAlimento, usuarioLogado);
         return ResponseEntity.noContent().build();
     }
-}
 
+    @GetMapping("/codigo-barras/{codigo}")
+    public ResponseEntity<DadosAlimentoPorCodigoDeBarras> buscarPorCodigoDeBarras(@PathVariable String codigo,
+            @AuthenticationPrincipal Usuario usuarioLogado) {
+        var dados = openFoodFactsService.buscarPorCodigoDeBarras(codigo);
+        return ResponseEntity.ok(dados);
+    }
+}
