@@ -49,7 +49,6 @@ public class Usuario implements UserDetails {
     @Enumerated(EnumType.STRING)
     private TipoUsuario tipoUsuario = TipoUsuario.USER;
 
-    @Column(nullable = false)
     private LocalDate dataNascimento;
 
     @Column(precision = 5, scale = 2)
@@ -89,6 +88,9 @@ public class Usuario implements UserDetails {
     @Column(length = 500)
     private String imagemUsuario;
 
+    @Column(unique = true)
+    private String googleId;
+
     private Boolean ativo;
 
     // Mapeando os relacionamentos
@@ -127,7 +129,7 @@ public class Usuario implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.senha; // Retorna a senha do usuário
+        return this.senha != null ? this.senha : ""; // Retorna a senha do usuário (vazia se login via Google)
     }
 
     @Override
@@ -173,7 +175,15 @@ public class Usuario implements UserDetails {
         this.estado = dados.estado();
         this.cep = dados.cep();
         this.imagemUsuario = dados.imagemUsuario();
+    }
 
+    // Construtor para criação de usuário via Google OAuth 2.0
+    public Usuario(String nome, String email, String googleId, String imagemUsuario) {
+        this.ativo = true;
+        this.nome = nome;
+        this.email = email;
+        this.googleId = googleId;
+        this.imagemUsuario = imagemUsuario;
     }
 
     public void atualizarInformacoes(@Valid DadosAtualizacaoUsuario dados) {
@@ -244,5 +254,9 @@ public class Usuario implements UserDetails {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public void setGoogleId(String googleId) {
+        this.googleId = googleId;
     }
 }

@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-@Entity(name = "TreinoExercicio")
+@Entity
 @Table(name = "TreinoExercicio")
 @Getter
 @NoArgsConstructor
