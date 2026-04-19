@@ -33,5 +33,5 @@ build/
 .vscode/
 
 ### Configuration Files ###
-src/main/resources/application.properties
 teste-google-login.html
+.env
