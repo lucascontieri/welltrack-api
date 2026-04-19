@@ -1,4 +1,4 @@
-package com.welltrack.integration;
+package com.welltrack.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.welltrack.domain.alimento.Alimento;
@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -24,8 +25,20 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+        "MAIL_HOST=localhost",
+        "MAIL_PORT=587",
+        "MAIL_USERNAME=user",
+        "MAIL_PASSWORD=password",
+        "MAIL_FROM=noreply@welltrack.com",
+        "JWT_SECRET=321654",
+        "GOOGLE_CLIENT_ID=google",
+        "GEMINI_API_KEY=gemini",
+        "APP_PUBLIC_BASE_URL=http://localhost:8080",
+        "TEST_DATASOURCE_URL=jdbc:postgresql://localhost:5432/welltrack_db_test"
+})
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class AlimentoControllerTest {
 
     @Autowired

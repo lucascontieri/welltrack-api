@@ -1,4 +1,4 @@
-package com.welltrack.unit;
+package com.welltrack.service.refeicaoalimento;
 
 import com.welltrack.domain.alimento.Alimento;
 import com.welltrack.domain.refeicao.Refeicao;

@@ -1,4 +1,4 @@
-package com.welltrack.unit;
+package com.welltrack.service.registrotreino;
 
 import com.welltrack.domain.registrotreino.RegistroTreino;
 import com.welltrack.domain.treino.Treino;
