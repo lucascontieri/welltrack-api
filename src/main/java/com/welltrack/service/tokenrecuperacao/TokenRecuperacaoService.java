@@ -1,5 +1,6 @@
 package com.welltrack.service.tokenrecuperacao;
 
+import com.welltrack.domain.tokenrecuperacao.TipoTokenRecuperacao;
 import com.welltrack.domain.tokenrecuperacao.TokenRecuperacao;
 import com.welltrack.domain.usuario.Usuario;
 import com.welltrack.dto.tokenrecuperacao.DadosAtualizacaoTokenRecuperacao;
@@ -24,42 +25,43 @@ public class TokenRecuperacaoService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    private void validarIdor(UUID idAlvo, Usuario usuarioLogado) {
+    private void validarUsuario(UUID idAlvo, Usuario usuarioLogado) {
         if (!idAlvo.equals(usuarioLogado.getIdUsuario())) {
             throw new AccessDeniedException("Acesso negado: O recurso solicitado pertence a outro usuário.");
         }
     }
 
     public TokenRecuperacao cadastrar(DadosCadastroTokenRecuperacao dados, Usuario usuarioLogado) {
-        validarIdor(dados.idUsuario(), usuarioLogado);
+        validarUsuario(dados.idUsuario(), usuarioLogado);
 
         var usuario = usuarioRepository.getReferenceById(dados.idUsuario());
+        var tipo = dados.tipo() != null ? dados.tipo() : TipoTokenRecuperacao.RECUPERACAO_SENHA;
         var tokenRecuperacao = new TokenRecuperacao(null, dados.token(), dados.expiracao(), dados.usado(),
-                dados.tentativas(), dados.dataCriacao(), usuario);
+                dados.tentativas(), dados.dataCriacao(), tipo, usuario);
         return repository.save(tokenRecuperacao);
     }
 
     public Page<DadosListagemTokenRecuperacao> listar(UUID idUsuario, Pageable paginacao, Usuario usuarioLogado) {
-        validarIdor(idUsuario, usuarioLogado);
+        validarUsuario(idUsuario, usuarioLogado);
         return repository.findAllByUsuarioIdUsuario(idUsuario, paginacao).map(DadosListagemTokenRecuperacao::new);
     }
 
     public TokenRecuperacao detalhar(UUID idToken, Usuario usuarioLogado) {
         var tokenRecuperacao = repository.getReferenceById(idToken);
-        validarIdor(tokenRecuperacao.getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(tokenRecuperacao.getUsuario().getIdUsuario(), usuarioLogado);
         return tokenRecuperacao;
     }
 
     public TokenRecuperacao atualizar(DadosAtualizacaoTokenRecuperacao dados, Usuario usuarioLogado) {
         var tokenRecuperacao = repository.getReferenceById(dados.idToken());
-        validarIdor(tokenRecuperacao.getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(tokenRecuperacao.getUsuario().getIdUsuario(), usuarioLogado);
         tokenRecuperacao.atualizar(dados);
         return tokenRecuperacao;
     }
 
     public void deletar(UUID idToken, Usuario usuarioLogado) {
         var tokenRecuperacao = repository.getReferenceById(idToken);
-        validarIdor(tokenRecuperacao.getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(tokenRecuperacao.getUsuario().getIdUsuario(), usuarioLogado);
         repository.delete(tokenRecuperacao);
     }
 }

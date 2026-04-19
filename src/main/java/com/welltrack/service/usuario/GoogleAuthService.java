@@ -5,7 +5,9 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.welltrack.domain.usuario.Usuario;
+import com.welltrack.exception.ValidacaoException;
 import com.welltrack.repository.usuario.UsuarioRepository;
+import com.welltrack.util.EmailUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,25 +29,23 @@ public class GoogleAuthService {
         GoogleIdToken.Payload payload = verificarToken(idTokenString);
 
         String googleId = payload.getSubject();
-        String email = payload.getEmail();
+        String email = EmailUtils.normalizar(payload.getEmail());
         String nome = (String) payload.get("name");
         String picture = (String) payload.get("picture");
 
-        // 1. Buscar por googleId (já logou com Google antes)
         var usuarioExistente = repository.findByGoogleId(googleId);
         if (usuarioExistente.isPresent()) {
             return usuarioExistente.get();
         }
 
-        // 2. Buscar por email (usuário já cadastrado com email/senha, agora quer vincular Google)
         var usuarioPorEmail = repository.findOptionalByEmail(email);
         if (usuarioPorEmail.isPresent()) {
             var usuario = usuarioPorEmail.get();
             usuario.setGoogleId(googleId);
+            usuario.setEmailVerificado(true);
             return repository.save(usuario);
         }
 
-        // 3. Novo usuário — criar conta apenas com dados do Google
         var novoUsuario = new Usuario(nome, email, googleId, picture);
         return repository.save(novoUsuario);
     }
@@ -60,12 +60,12 @@ public class GoogleAuthService {
             GoogleIdToken idToken = verifier.verify(idTokenString);
 
             if (idToken == null) {
-                throw new RuntimeException("Token do Google inválido ou expirado.");
+                throw new ValidacaoException("Token do Google invalido ou expirado.");
             }
 
             return idToken.getPayload();
         } catch (GeneralSecurityException | IOException e) {
-            throw new RuntimeException("Erro ao verificar o token do Google.", e);
+            throw new ValidacaoException("Erro ao verificar o token do Google.");
         }
     }
 }

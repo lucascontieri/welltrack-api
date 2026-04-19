@@ -1,5 +1,6 @@
 package com.welltrack.dto.tokenrecuperacao;
 
+import com.welltrack.domain.tokenrecuperacao.TipoTokenRecuperacao;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -24,6 +25,9 @@ public record DadosCadastroTokenRecuperacao(
         LocalDateTime dataCriacao,
 
         @NotNull
-        UUID idUsuario) {
+        UUID idUsuario,
+
+        /** Se null, assume {@link TipoTokenRecuperacao#RECUPERACAO_SENHA}. */
+        TipoTokenRecuperacao tipo) {
 }
 

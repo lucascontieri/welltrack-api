@@ -24,7 +24,7 @@ public class TarefaService {
     @Autowired
     private ListaRepository listaRepository;
 
-    private void validarIdor(UUID idAlvo, Usuario usuarioLogado) {
+    private void validarUsuario(UUID idAlvo, Usuario usuarioLogado) {
         if (!idAlvo.equals(usuarioLogado.getIdUsuario())) {
             throw new AccessDeniedException("Acesso negado: O recurso solicitado pertence a outro usuário.");
         }
@@ -32,7 +32,7 @@ public class TarefaService {
 
     public Tarefa cadastrar(DadosCadastroTarefa dados, Usuario usuarioLogado) {
         var lista = listaRepository.getReferenceById(dados.idLista());
-        validarIdor(lista.getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(lista.getUsuario().getIdUsuario(), usuarioLogado);
 
         var tarefa = new Tarefa(null, dados.descricao(), dados.status(), dados.prazoMaximo(),
                 dados.imagemTarefa(), lista, null);
@@ -40,26 +40,26 @@ public class TarefaService {
     }
 
     public Page<DadosListagemTarefa> listar(UUID idUsuario, Pageable paginacao, Usuario usuarioLogado) {
-        validarIdor(idUsuario, usuarioLogado);
+        validarUsuario(idUsuario, usuarioLogado);
         return repository.findAllByListaUsuarioIdUsuario(idUsuario, paginacao).map(DadosListagemTarefa::new);
     }
 
     public Tarefa detalhar(UUID idTarefa, Usuario usuarioLogado) {
         var tarefa = repository.getReferenceById(idTarefa);
-        validarIdor(tarefa.getLista().getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(tarefa.getLista().getUsuario().getIdUsuario(), usuarioLogado);
         return tarefa;
     }
 
     public Tarefa atualizar(DadosAtualizacaoTarefa dados, Usuario usuarioLogado) {
         var tarefa = repository.getReferenceById(dados.idTarefa());
-        validarIdor(tarefa.getLista().getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(tarefa.getLista().getUsuario().getIdUsuario(), usuarioLogado);
         tarefa.atualizar(dados);
         return tarefa;
     }
 
     public void deletar(UUID idTarefa, Usuario usuarioLogado) {
         var tarefa = repository.getReferenceById(idTarefa);
-        validarIdor(tarefa.getLista().getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(tarefa.getLista().getUsuario().getIdUsuario(), usuarioLogado);
         repository.delete(tarefa);
     }
 }

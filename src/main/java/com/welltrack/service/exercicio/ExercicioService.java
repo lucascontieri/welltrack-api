@@ -28,14 +28,14 @@ public class ExercicioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    private void validarIdor(UUID idAlvo, Usuario usuarioLogado) {
+    private void validarUsuario(UUID idAlvo, Usuario usuarioLogado) {
         if (!idAlvo.equals(usuarioLogado.getIdUsuario())) {
             throw new AccessDeniedException("Acesso negado: O recurso solicitado pertence a outro usuário.");
         }
     }
 
     public Exercicio cadastrar(DadosCadastroExercicio dados, Usuario usuarioLogado) {
-        validarIdor(dados.idUsuario(), usuarioLogado);
+        validarUsuario(dados.idUsuario(), usuarioLogado);
 
         var grupoMuscular = grupoMuscularRepository.getReferenceById(dados.idGrupo());
         var usuario = usuarioRepository.getReferenceById(dados.idUsuario());
@@ -45,26 +45,26 @@ public class ExercicioService {
     }
 
     public Page<DadosListagemExercicio> listar(UUID idUsuario, Pageable paginacao, Usuario usuarioLogado) {
-        validarIdor(idUsuario, usuarioLogado);
+        validarUsuario(idUsuario, usuarioLogado);
         return repository.findAllByUsuarioIdUsuario(idUsuario, paginacao).map(DadosListagemExercicio::new);
     }
 
     public Exercicio detalhar(UUID idExercicio, Usuario usuarioLogado) {
         var exercicio = repository.getReferenceById(idExercicio);
-        validarIdor(exercicio.getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(exercicio.getUsuario().getIdUsuario(), usuarioLogado);
         return exercicio;
     }
 
     public Exercicio atualizar(DadosAtualizacaoExercicio dados, Usuario usuarioLogado) {
         var exercicio = repository.getReferenceById(dados.idExercicio());
-        validarIdor(exercicio.getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(exercicio.getUsuario().getIdUsuario(), usuarioLogado);
         exercicio.atualizar(dados);
         return exercicio;
     }
 
     public void deletar(UUID idExercicio, Usuario usuarioLogado) {
         var exercicio = repository.getReferenceById(idExercicio);
-        validarIdor(exercicio.getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(exercicio.getUsuario().getIdUsuario(), usuarioLogado);
         repository.delete(exercicio);
     }
 }

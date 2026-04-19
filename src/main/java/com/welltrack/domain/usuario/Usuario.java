@@ -91,6 +91,13 @@ public class Usuario implements UserDetails {
     @Column(unique = true)
     private String googleId;
 
+    /**
+     * Contas criadas com e-mail/senha ficam false até o usuário confirmar o link
+     * enviado por e-mail.
+     */
+    @Column(name = "email_verificado", nullable = false)
+    private Boolean emailVerificado = false;
+
     private Boolean ativo;
 
     // Mapeando os relacionamentos
@@ -154,11 +161,18 @@ public class Usuario implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.ativo; // Define se a conta está ativa
+        if (!Boolean.TRUE.equals(this.ativo)) {
+            return false;
+        }
+        if (this.googleId != null) {
+            return true;
+        }
+        return Boolean.TRUE.equals(this.emailVerificado);
     }
 
     public Usuario(DadosCadastroUsuario dados) {
         this.ativo = true;
+        this.emailVerificado = false;
         this.nome = dados.nome();
         this.cpf = dados.cpf();
         this.dataNascimento = dados.dataNascimento();
@@ -180,6 +194,7 @@ public class Usuario implements UserDetails {
     // Construtor para criação de usuário via Google OAuth 2.0
     public Usuario(String nome, String email, String googleId, String imagemUsuario) {
         this.ativo = true;
+        this.emailVerificado = true;
         this.nome = nome;
         this.email = email;
         this.googleId = googleId;
@@ -258,5 +273,21 @@ public class Usuario implements UserDetails {
 
     public void setGoogleId(String googleId) {
         this.googleId = googleId;
+    }
+
+    public void setEmailVerificado(boolean emailVerificado) {
+        this.emailVerificado = emailVerificado;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public boolean isSenhaCadastrada() {
+        return this.senha != null;
+    }
+
+    public boolean isSomenteGoogle() {
+        return this.googleId != null && this.senha == null;
     }
 }

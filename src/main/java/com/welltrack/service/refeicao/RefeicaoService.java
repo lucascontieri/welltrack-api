@@ -24,14 +24,14 @@ public class RefeicaoService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    private void validarIdor(UUID idAlvo, Usuario usuarioLogado) {
+    private void validarUsuario(UUID idAlvo, Usuario usuarioLogado) {
         if (!idAlvo.equals(usuarioLogado.getIdUsuario())) {
             throw new AccessDeniedException("Acesso negado: O recurso solicitado pertence a outro usuário.");
         }
     }
 
     public Refeicao cadastrar(DadosCadastroRefeicao dados, Usuario usuarioLogado) {
-        validarIdor(dados.idUsuario(), usuarioLogado);
+        validarUsuario(dados.idUsuario(), usuarioLogado);
 
         var usuario = usuarioRepository.getReferenceById(dados.idUsuario());
         var refeicao = new Refeicao(null, dados.nomeRefeicao(), dados.horario(), dados.tipoRecorrencia(),
@@ -40,26 +40,26 @@ public class RefeicaoService {
     }
 
     public Page<DadosListagemRefeicao> listar(UUID idUsuario, Pageable paginacao, Usuario usuarioLogado) {
-        validarIdor(idUsuario, usuarioLogado);
+        validarUsuario(idUsuario, usuarioLogado);
         return repository.findAllByUsuarioIdUsuario(idUsuario, paginacao).map(DadosListagemRefeicao::new);
     }
 
     public Refeicao detalhar(UUID idRefeicao, Usuario usuarioLogado) {
         var refeicao = repository.getReferenceById(idRefeicao);
-        validarIdor(refeicao.getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(refeicao.getUsuario().getIdUsuario(), usuarioLogado);
         return refeicao;
     }
 
     public Refeicao atualizar(DadosAtualizacaoRefeicao dados, Usuario usuarioLogado) {
         var refeicao = repository.getReferenceById(dados.idRefeicao());
-        validarIdor(refeicao.getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(refeicao.getUsuario().getIdUsuario(), usuarioLogado);
         refeicao.atualizar(dados);
         return refeicao;
     }
 
     public void deletar(UUID idRefeicao, Usuario usuarioLogado) {
         var refeicao = repository.getReferenceById(idRefeicao);
-        validarIdor(refeicao.getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(refeicao.getUsuario().getIdUsuario(), usuarioLogado);
         repository.delete(refeicao);
     }
 }

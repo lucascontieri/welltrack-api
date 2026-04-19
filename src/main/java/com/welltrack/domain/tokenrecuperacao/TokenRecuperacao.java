@@ -37,9 +37,17 @@ public class TokenRecuperacao {
     @Column(nullable = false)
     private LocalDateTime dataCriacao;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private TipoTokenRecuperacao tipo = TipoTokenRecuperacao.RECUPERACAO_SENHA;
+
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
+
+    public void marcarComoUsado() {
+        this.usado = true;
+    }
 
     public void atualizar(com.welltrack.dto.tokenrecuperacao.DadosAtualizacaoTokenRecuperacao dados) {
         if (dados.token() != null) {

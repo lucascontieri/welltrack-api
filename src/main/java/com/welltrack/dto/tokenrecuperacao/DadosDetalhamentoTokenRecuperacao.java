@@ -1,5 +1,6 @@
 package com.welltrack.dto.tokenrecuperacao;
 
+import com.welltrack.domain.tokenrecuperacao.TipoTokenRecuperacao;
 import com.welltrack.domain.tokenrecuperacao.TokenRecuperacao;
 
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ public record DadosDetalhamentoTokenRecuperacao(
         Boolean usado,
         Integer tentativas,
         LocalDateTime dataCriacao,
+        TipoTokenRecuperacao tipo,
         UUID idUsuario,
         String emailUsuario) {
 
@@ -22,6 +24,7 @@ public record DadosDetalhamentoTokenRecuperacao(
                 tokenRecuperacao.getUsado(),
                 tokenRecuperacao.getTentativas(),
                 tokenRecuperacao.getDataCriacao(),
+                tokenRecuperacao.getTipo(),
                 tokenRecuperacao.getUsuario().getIdUsuario(),
                 tokenRecuperacao.getUsuario().getEmail());
     }
