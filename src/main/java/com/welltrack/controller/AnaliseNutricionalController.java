@@ -26,20 +26,10 @@ public class AnaliseNutricionalController {
             @RequestParam("imagem") MultipartFile imagem,
             @AuthenticationPrincipal Usuario usuarioLogado) throws IOException {
 
-        if (imagem.isEmpty()) {
-            throw new RuntimeException("A imagem não pode estar vazia.");
-        }
-
-        String mimeType = imagem.getContentType();
-        if (mimeType == null || !mimeType.startsWith("image/")) {
-            throw new RuntimeException("O arquivo enviado deve ser uma imagem.");
-        }
-
         var resultado = geminiService.analisarImagem(
                 imagem.getBytes(),
-                mimeType,
-                usuarioLogado.getIdUsuario()
-        );
+                imagem.getContentType(),
+                usuarioLogado.getIdUsuario());
 
         return ResponseEntity.ok(resultado);
     }

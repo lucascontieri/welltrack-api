@@ -28,7 +28,7 @@ public class GrupoMuscularController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastroGrupoMuscular dados, @AuthenticationPrincipal Usuario usuarioLogado, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<DadosDetalhamentoGrupoMuscular> cadastrar(@RequestBody @Valid DadosCadastroGrupoMuscular dados, @AuthenticationPrincipal Usuario usuarioLogado, UriComponentsBuilder uriBuilder) {
         var grupoMuscular = service.cadastrar(dados, usuarioLogado);
 
         var uri = uriBuilder.path("/grupomuscular/{id}").buildAndExpand(grupoMuscular.getIdGrupo()).toUri();
@@ -37,20 +37,20 @@ public class GrupoMuscularController {
     }
 
     @GetMapping
-    public ResponseEntity listar(@PageableDefault(size = 10, sort = {"nome_grupo_muscular"}) Pageable paginacao) {
+    public ResponseEntity<?> listar(@PageableDefault(size = 10, sort = {"nome_grupo_muscular"}) Pageable paginacao) {
         var page = service.listar(paginacao);
         return ResponseEntity.ok(page);
     }
 
     @GetMapping("/{idGrupo}")
-    public ResponseEntity detalhar(@PathVariable UUID idGrupo) {
+    public ResponseEntity<DadosDetalhamentoGrupoMuscular> detalhar(@PathVariable UUID idGrupo) {
         var grupoMuscular = service.detalhar(idGrupo);
         return ResponseEntity.ok(new DadosDetalhamentoGrupoMuscular(grupoMuscular));
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity atualizar(@RequestBody @Valid DadosAtualizacaoGrupoMuscular dados, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<DadosDetalhamentoGrupoMuscular> atualizar(@RequestBody @Valid DadosAtualizacaoGrupoMuscular dados, @AuthenticationPrincipal Usuario usuarioLogado) {
         var grupoMuscular = service.atualizar(dados, usuarioLogado);
 
         return ResponseEntity.ok(new DadosDetalhamentoGrupoMuscular(grupoMuscular));
@@ -58,7 +58,7 @@ public class GrupoMuscularController {
 
     @DeleteMapping("/{idGrupo}")
     @Transactional
-    public ResponseEntity deletar(@PathVariable UUID idGrupo, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<Void> deletar(@PathVariable UUID idGrupo, @AuthenticationPrincipal Usuario usuarioLogado) {
         service.deletar(idGrupo, usuarioLogado);
 
         return ResponseEntity.noContent().build();

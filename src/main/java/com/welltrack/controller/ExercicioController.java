@@ -28,7 +28,7 @@ public class ExercicioController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastroExercicio dados,
+    public ResponseEntity<DadosDetalhamentoExercicio> cadastrar(@RequestBody @Valid DadosCadastroExercicio dados,
                                     @AuthenticationPrincipal Usuario usuarioLogado,
                                     UriComponentsBuilder uriBuilder) {
         var exercicio = service.cadastrar(dados, usuarioLogado);
@@ -39,7 +39,7 @@ public class ExercicioController {
     }
 
     @GetMapping
-    public ResponseEntity listar(@RequestParam UUID idUsuario,
+    public ResponseEntity<?> listar(@RequestParam UUID idUsuario,
                                  @AuthenticationPrincipal Usuario usuarioLogado,
                                  @PageableDefault(size = 10, sort = {"nomeExercicio"}) Pageable paginacao) {
         var page = service.listar(idUsuario, paginacao, usuarioLogado);
@@ -47,21 +47,21 @@ public class ExercicioController {
     }
 
     @GetMapping("/{idExercicio}")
-    public ResponseEntity detalhar(@PathVariable UUID idExercicio, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<DadosDetalhamentoExercicio> detalhar(@PathVariable UUID idExercicio, @AuthenticationPrincipal Usuario usuarioLogado) {
         var exercicio = service.detalhar(idExercicio, usuarioLogado);
         return ResponseEntity.ok(new DadosDetalhamentoExercicio(exercicio));
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity atualizar(@RequestBody @Valid DadosAtualizacaoExercicio dados, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<DadosDetalhamentoExercicio> atualizar(@RequestBody @Valid DadosAtualizacaoExercicio dados, @AuthenticationPrincipal Usuario usuarioLogado) {
         var exercicio = service.atualizar(dados, usuarioLogado);
         return ResponseEntity.ok(new DadosDetalhamentoExercicio(exercicio));
     }
 
     @DeleteMapping("/{idExercicio}")
     @Transactional
-    public ResponseEntity deletar(@PathVariable UUID idExercicio, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<Void> deletar(@PathVariable UUID idExercicio, @AuthenticationPrincipal Usuario usuarioLogado) {
         service.deletar(idExercicio, usuarioLogado);
         return ResponseEntity.noContent().build();
     }

@@ -33,7 +33,7 @@ public class AlimentoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastroAlimento dados,
+    public ResponseEntity<DadosDetalhamentoAlimento> cadastrar(@RequestBody @Valid DadosCadastroAlimento dados,
             @AuthenticationPrincipal Usuario usuarioLogado,
             UriComponentsBuilder uriBuilder) {
 
@@ -44,7 +44,7 @@ public class AlimentoController {
     }
 
     @GetMapping
-    public ResponseEntity listar(@RequestParam UUID idUsuario,
+    public ResponseEntity<?> listar(@RequestParam UUID idUsuario,
             @AuthenticationPrincipal Usuario usuarioLogado,
             @PageableDefault(size = 10, sort = { "nomeAlimento" }) Pageable paginacao) {
         var page = service.listar(idUsuario, paginacao, usuarioLogado);
@@ -52,14 +52,14 @@ public class AlimentoController {
     }
 
     @GetMapping("/{idAlimento}")
-    public ResponseEntity detalhar(@PathVariable UUID idAlimento, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<DadosDetalhamentoAlimento> detalhar(@PathVariable UUID idAlimento, @AuthenticationPrincipal Usuario usuarioLogado) {
         var alimento = service.detalhar(idAlimento, usuarioLogado);
         return ResponseEntity.ok(new DadosDetalhamentoAlimento(alimento));
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity atualizar(@RequestBody @Valid DadosAtualizacaoAlimento dados,
+    public ResponseEntity<DadosDetalhamentoAlimento> atualizar(@RequestBody @Valid DadosAtualizacaoAlimento dados,
             @AuthenticationPrincipal Usuario usuarioLogado) {
         var alimento = service.atualizar(dados, usuarioLogado);
         return ResponseEntity.ok(new DadosDetalhamentoAlimento(alimento));
@@ -67,7 +67,7 @@ public class AlimentoController {
 
     @DeleteMapping("/{idAlimento}")
     @Transactional
-    public ResponseEntity deletar(@PathVariable UUID idAlimento, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<Void> deletar(@PathVariable UUID idAlimento, @AuthenticationPrincipal Usuario usuarioLogado) {
         service.deletar(idAlimento, usuarioLogado);
         return ResponseEntity.noContent().build();
     }
