@@ -1,0 +1,27 @@
+# Build artifacts
+target/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Docs
+HELP.md
+README.md
+*.txt
+
+# Environment files
+.env
