@@ -27,7 +27,7 @@ public class RefeicaoAlimentoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastroRefeicaoAlimento dados,
+    public ResponseEntity<?> cadastrar(@RequestBody @Valid DadosCadastroRefeicaoAlimento dados,
                                     @AuthenticationPrincipal Usuario usuarioLogado,
                                     UriComponentsBuilder uriBuilder) {
 
@@ -39,7 +39,7 @@ public class RefeicaoAlimentoController {
     }
 
     @GetMapping
-    public ResponseEntity listar(@RequestParam UUID idUsuario,
+    public ResponseEntity<?> listar(@RequestParam UUID idUsuario,
                                  @AuthenticationPrincipal Usuario usuarioLogado,
                                  @PageableDefault(size = 10) Pageable paginacao) {
         var page = service.listarPorUsuario(idUsuario, paginacao, usuarioLogado);
@@ -47,7 +47,7 @@ public class RefeicaoAlimentoController {
     }
 
     @GetMapping("/{idRefeicao}/{idAlimento}")
-    public ResponseEntity detalhar(@PathVariable UUID idRefeicao,
+    public ResponseEntity<?> detalhar(@PathVariable UUID idRefeicao,
                                    @PathVariable UUID idAlimento,
                                    @AuthenticationPrincipal Usuario usuarioLogado) {
         var dto = service.detalhar(idRefeicao, idAlimento, usuarioLogado);
@@ -56,7 +56,7 @@ public class RefeicaoAlimentoController {
 
     @PutMapping
     @Transactional
-    public ResponseEntity atualizar(@RequestBody @Valid DadosAtualizacaoRefeicaoAlimento dados,
+    public ResponseEntity<?> atualizar(@RequestBody @Valid DadosAtualizacaoRefeicaoAlimento dados,
                                     @AuthenticationPrincipal Usuario usuarioLogado) {
         var dto = service.atualizar(dados, usuarioLogado);
         return ResponseEntity.ok(dto);
@@ -64,7 +64,7 @@ public class RefeicaoAlimentoController {
 
     @DeleteMapping("/{idRefeicao}/{idAlimento}")
     @Transactional
-    public ResponseEntity deletar(@PathVariable UUID idRefeicao,
+    public ResponseEntity<Void> deletar(@PathVariable UUID idRefeicao,
                                   @PathVariable UUID idAlimento,
                                   @AuthenticationPrincipal Usuario usuarioLogado) {
         service.deletar(idRefeicao, idAlimento, usuarioLogado);

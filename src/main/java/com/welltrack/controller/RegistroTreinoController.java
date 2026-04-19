@@ -28,7 +28,7 @@ public class RegistroTreinoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastroRegistroTreino dados,
+    public ResponseEntity<DadosDetalhamentoRegistroTreino> cadastrar(@RequestBody @Valid DadosCadastroRegistroTreino dados,
                                     @AuthenticationPrincipal Usuario usuarioLogado,
                                     UriComponentsBuilder uriBuilder) {
         var registroTreino = service.cadastrar(dados, usuarioLogado);
@@ -39,7 +39,7 @@ public class RegistroTreinoController {
     }
 
     @GetMapping
-    public ResponseEntity listar(@RequestParam UUID idUsuario,
+    public ResponseEntity<?> listar(@RequestParam UUID idUsuario,
                                  @AuthenticationPrincipal Usuario usuarioLogado,
                                  @PageableDefault(size = 10, sort = {"dataExecucao"}) Pageable paginacao) {
         var page = service.listar(idUsuario, paginacao, usuarioLogado);
@@ -47,21 +47,21 @@ public class RegistroTreinoController {
     }
 
     @GetMapping("/{idRegistro}")
-    public ResponseEntity detalhar(@PathVariable UUID idRegistro, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<DadosDetalhamentoRegistroTreino> detalhar(@PathVariable UUID idRegistro, @AuthenticationPrincipal Usuario usuarioLogado) {
         var registroTreino = service.detalhar(idRegistro, usuarioLogado);
         return ResponseEntity.ok(new DadosDetalhamentoRegistroTreino(registroTreino));
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity atualizar(@RequestBody @Valid DadosAtualizacaoRegistroTreino dados, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<DadosDetalhamentoRegistroTreino> atualizar(@RequestBody @Valid DadosAtualizacaoRegistroTreino dados, @AuthenticationPrincipal Usuario usuarioLogado) {
         var registroTreino = service.atualizar(dados, usuarioLogado);
         return ResponseEntity.ok(new DadosDetalhamentoRegistroTreino(registroTreino));
     }
 
     @DeleteMapping("/{idRegistro}")
     @Transactional
-    public ResponseEntity deletar(@PathVariable UUID idRegistro, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<Void> deletar(@PathVariable UUID idRegistro, @AuthenticationPrincipal Usuario usuarioLogado) {
         service.deletar(idRegistro, usuarioLogado);
         return ResponseEntity.noContent().build();
     }

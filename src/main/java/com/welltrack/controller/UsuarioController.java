@@ -28,34 +28,34 @@ public class UsuarioController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastroUsuario dados, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<DadosDetalhamentoUsuario> cadastrar(@RequestBody @Valid DadosCadastroUsuario dados, UriComponentsBuilder uriBuilder) {
         var usuario = service.cadastrar(dados);
         var uri = uriBuilder.path("/usuario/{id}").buildAndExpand(usuario.getIdUsuario()).toUri();
         return ResponseEntity.created(uri).body(new DadosDetalhamentoUsuario(usuario));
     }
 
     @GetMapping
-    public ResponseEntity listar(@PageableDefault(size = 10, sort = {"nome"}) Pageable paginacao) {
+    public ResponseEntity<?> listar(@PageableDefault(size = 10, sort = {"nome"}) Pageable paginacao) {
         var page = service.listar(paginacao);
         return ResponseEntity.ok(page);
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity atualizar(@RequestBody @Valid DadosAtualizacaoUsuario dados, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<DadosDetalhamentoUsuario> atualizar(@RequestBody @Valid DadosAtualizacaoUsuario dados, @AuthenticationPrincipal Usuario usuarioLogado) {
         var usuario = service.atualizar(dados, usuarioLogado);
         return ResponseEntity.ok(new DadosDetalhamentoUsuario(usuario));
     }
 
     @DeleteMapping("/{idUsuario}")
     @Transactional
-    public ResponseEntity deletar(@PathVariable UUID idUsuario, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<Void> deletar(@PathVariable UUID idUsuario, @AuthenticationPrincipal Usuario usuarioLogado) {
         service.deletar(idUsuario, usuarioLogado);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{idUsuario}")
-    public ResponseEntity detalhar(@PathVariable UUID idUsuario, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<DadosDetalhamentoUsuario> detalhar(@PathVariable UUID idUsuario, @AuthenticationPrincipal Usuario usuarioLogado) {
         var usuario = service.detalhar(idUsuario, usuarioLogado);
         return ResponseEntity.ok(new DadosDetalhamentoUsuario(usuario));
     }

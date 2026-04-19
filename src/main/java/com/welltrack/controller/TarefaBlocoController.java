@@ -28,7 +28,7 @@ public class TarefaBlocoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastroTarefaBloco dados,
+    public ResponseEntity<DadosDetalhamentoTarefaBloco> cadastrar(@RequestBody @Valid DadosCadastroTarefaBloco dados,
                                     @AuthenticationPrincipal Usuario usuarioLogado,
                                     UriComponentsBuilder uriBuilder) {
         var tarefaBloco = service.cadastrar(dados, usuarioLogado);
@@ -39,7 +39,7 @@ public class TarefaBlocoController {
     }
 
     @GetMapping
-    public ResponseEntity listar(@RequestParam UUID idUsuario,
+    public ResponseEntity<?> listar(@RequestParam UUID idUsuario,
                                  @AuthenticationPrincipal Usuario usuarioLogado,
                                  @PageableDefault(size = 10, sort = {"ordem"}) Pageable paginacao) {
         var page = service.listar(idUsuario, paginacao, usuarioLogado);
@@ -47,14 +47,14 @@ public class TarefaBlocoController {
     }
 
     @GetMapping("/{idBloco}")
-    public ResponseEntity detalhar(@PathVariable UUID idBloco, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<DadosDetalhamentoTarefaBloco> detalhar(@PathVariable UUID idBloco, @AuthenticationPrincipal Usuario usuarioLogado) {
         var tarefaBloco = service.detalhar(idBloco, usuarioLogado);
         return ResponseEntity.ok(new DadosDetalhamentoTarefaBloco(tarefaBloco));
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity atualizar(@RequestBody @Valid DadosAtualizacaoTarefaBloco dados, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<DadosDetalhamentoTarefaBloco> atualizar(@RequestBody @Valid DadosAtualizacaoTarefaBloco dados, @AuthenticationPrincipal Usuario usuarioLogado) {
         var tarefaBloco = service.atualizar(dados, usuarioLogado);
 
         return ResponseEntity.ok(new DadosDetalhamentoTarefaBloco(tarefaBloco));
@@ -62,7 +62,7 @@ public class TarefaBlocoController {
 
     @DeleteMapping("/{idBloco}")
     @Transactional
-    public ResponseEntity deletar(@PathVariable UUID idBloco, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<Void> deletar(@PathVariable UUID idBloco, @AuthenticationPrincipal Usuario usuarioLogado) {
         service.deletar(idBloco, usuarioLogado);
 
         return ResponseEntity.noContent().build();
