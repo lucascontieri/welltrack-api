@@ -17,7 +17,6 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "idRefeicaoAlimento")
 public class RefeicaoAlimento {
 
     @EmbeddedId

@@ -24,14 +24,14 @@ public class AlimentoService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    private void validarIdor(UUID idAlvo, Usuario usuarioLogado) {
+    private void validarUsuario(UUID idAlvo, Usuario usuarioLogado) {
         if (!idAlvo.equals(usuarioLogado.getIdUsuario())) {
             throw new AccessDeniedException("Acesso negado: O recurso solicitado pertence a outro usuário.");
         }
     }
 
     public Alimento cadastrar(DadosCadastroAlimento dados, Usuario usuarioLogado) {
-        validarIdor(dados.idUsuario(), usuarioLogado);
+        validarUsuario(dados.idUsuario(), usuarioLogado);
 
         var usuario = usuarioRepository.getReferenceById(dados.idUsuario());
         var alimento = new Alimento(null, dados.nomeAlimento(), dados.carboidrato(), dados.proteina(),
@@ -41,26 +41,26 @@ public class AlimentoService {
     }
 
     public Page<DadosListagemAlimento> listar(UUID idUsuario, Pageable paginacao, Usuario usuarioLogado) {
-        validarIdor(idUsuario, usuarioLogado);
+        validarUsuario(idUsuario, usuarioLogado);
         return repository.findAllByUsuarioIdUsuario(idUsuario, paginacao).map(DadosListagemAlimento::new);
     }
 
     public Alimento detalhar(UUID idAlimento, Usuario usuarioLogado) {
         var alimento = repository.getReferenceById(idAlimento);
-        validarIdor(alimento.getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(alimento.getUsuario().getIdUsuario(), usuarioLogado);
         return alimento;
     }
 
     public Alimento atualizar(DadosAtualizacaoAlimento dados, Usuario usuarioLogado) {
         var alimento = repository.getReferenceById(dados.idAlimento());
-        validarIdor(alimento.getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(alimento.getUsuario().getIdUsuario(), usuarioLogado);
         alimento.atualizar(dados);
         return alimento;
     }
 
     public void deletar(UUID idAlimento, Usuario usuarioLogado) {
         var alimento = repository.getReferenceById(idAlimento);
-        validarIdor(alimento.getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(alimento.getUsuario().getIdUsuario(), usuarioLogado);
         repository.delete(alimento);
     }
 }

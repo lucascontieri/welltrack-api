@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.welltrack.dto.analisenutricional.DadosAnaliseNutricional;
 import com.welltrack.dto.analisenutricional.ItemNutricional;
+import com.welltrack.exception.ValidacaoException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,7 @@ public class GeminiService {
     private final ConcurrentHashMap<UUID, ConcurrentHashMap<LocalDate, Integer>> contadorUsuarios = new ConcurrentHashMap<>();
 
     public DadosAnaliseNutricional analisarImagem(byte[] imagemBytes, String mimeType, UUID idUsuario) {
+        validarImagem(imagemBytes, mimeType);
         verificarLimiteDiario(idUsuario);
 
         String base64Image = java.util.Base64.getEncoder().encodeToString(imagemBytes);
@@ -43,6 +45,15 @@ public class GeminiService {
         incrementarContador(idUsuario);
 
         return parsearResposta(responseBody);
+    }
+
+    private void validarImagem(byte[] imagemBytes, String mimeType) {
+        if (imagemBytes == null || imagemBytes.length == 0) {
+            throw new ValidacaoException("A imagem não pode estar vazia.");
+        }
+        if (mimeType == null || !mimeType.startsWith("image/")) {
+            throw new ValidacaoException("O arquivo enviado deve ser uma imagem.");
+        }
     }
 
     public int consultasRestantes(UUID idUsuario) {
@@ -58,7 +69,7 @@ public class GeminiService {
         int usadasHoje = contadorDatas.getOrDefault(LocalDate.now(), 0);
 
         if (usadasHoje >= limiteDiario) {
-            throw new RuntimeException("Limite diário de " + limiteDiario + " análises atingido. Tente novamente amanhã.");
+            throw new ValidacaoException("Limite diário de " + limiteDiario + " analises atingido. Tente novamente amanhã.");
         }
     }
 
@@ -133,7 +144,7 @@ public class GeminiService {
 
             jsonPayload = objectMapper.writeValueAsString(requestBody);
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao montar requisição para o Gemini.", e);
+            throw new ValidacaoException("Erro ao montar requisicao para o Gemini.");
         }
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -146,16 +157,16 @@ public class GeminiService {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 429) {
-                throw new RuntimeException("Limite de requisições da API Gemini atingido. Tente novamente mais tarde.");
+                throw new ValidacaoException("Limite de requisições da API Gemini atingido. Tente novamente mais tarde.");
             }
 
             if (response.statusCode() != 200) {
-                throw new RuntimeException("Erro na API Gemini (status " + response.statusCode() + "): " + response.body());
+                throw new ValidacaoException("Erro na API Gemini (status " + response.statusCode() + ").");
             }
 
             return response.body();
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException("Erro ao se comunicar com a API Gemini.", e);
+            throw new ValidacaoException("Erro ao se comunicar com a API Gemini.");
         }
     }
 
@@ -197,7 +208,7 @@ public class GeminiService {
                     itens
             );
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao processar resposta do Gemini.", e);
+            throw new ValidacaoException("Erro ao processar resposta do Gemini.");
         }
     }
 }

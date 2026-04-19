@@ -30,7 +30,7 @@ public class RefeicaoAlimentoService {
     @Autowired
     private AlimentoRepository alimentoRepository;
 
-    private void validarIdor(Refeicao refeicao, Alimento alimento, Usuario usuarioLogado) {
+    private void validarUsuario(Refeicao refeicao, Alimento alimento, Usuario usuarioLogado) {
         if (!refeicao.getUsuario().getIdUsuario().equals(usuarioLogado.getIdUsuario()) ||
                 !alimento.getUsuario().getIdUsuario().equals(usuarioLogado.getIdUsuario())) {
             throw new AccessDeniedException("Acesso negado: A refeição ou o alimento não pertencem ao usuário logado.");
@@ -41,7 +41,7 @@ public class RefeicaoAlimentoService {
         var refeicao = refeicaoRepository.getReferenceById(dados.idRefeicao());
         var alimento = alimentoRepository.getReferenceById(dados.idAlimento());
 
-        validarIdor(refeicao, alimento, usuarioLogado);
+        validarUsuario(refeicao, alimento, usuarioLogado);
 
         var id = new RefeicaoAlimento.idRefeicaoAlimento(dados.idRefeicao(), dados.idAlimento());
         var refeicaoAlimento = new RefeicaoAlimento(id, dados.quantidade(), dados.unidadeMedida(), refeicao, alimento);
@@ -62,7 +62,7 @@ public class RefeicaoAlimentoService {
         var id = new RefeicaoAlimento.idRefeicaoAlimento(idRefeicao, idAlimento);
         var refeicaoAlimento = repository.getReferenceById(id);
 
-        validarIdor(refeicaoAlimento.getRefeicao(), refeicaoAlimento.getAlimento(), usuarioLogado);
+        validarUsuario(refeicaoAlimento.getRefeicao(), refeicaoAlimento.getAlimento(), usuarioLogado);
 
         return new DadosDetalhamentoRefeicaoAlimento(refeicaoAlimento);
     }
@@ -71,7 +71,7 @@ public class RefeicaoAlimentoService {
         var id = new RefeicaoAlimento.idRefeicaoAlimento(dados.idRefeicao(), dados.idAlimento());
         var refeicaoAlimento = repository.getReferenceById(id);
 
-        validarIdor(refeicaoAlimento.getRefeicao(), refeicaoAlimento.getAlimento(), usuarioLogado);
+        validarUsuario(refeicaoAlimento.getRefeicao(), refeicaoAlimento.getAlimento(), usuarioLogado);
 
         refeicaoAlimento.atualizar(dados);
         return new DadosDetalhamentoRefeicaoAlimento(refeicaoAlimento);
@@ -81,7 +81,7 @@ public class RefeicaoAlimentoService {
         var id = new RefeicaoAlimento.idRefeicaoAlimento(idRefeicao, idAlimento);
         var refeicaoAlimento = repository.getReferenceById(id);
 
-        validarIdor(refeicaoAlimento.getRefeicao(), refeicaoAlimento.getAlimento(), usuarioLogado);
+        validarUsuario(refeicaoAlimento.getRefeicao(), refeicaoAlimento.getAlimento(), usuarioLogado);
 
         repository.delete(refeicaoAlimento);
     }

@@ -28,14 +28,14 @@ public class RegistroTreinoService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    private void validarIdor(UUID idAlvo, Usuario usuarioLogado) {
+    private void validarUsuario(UUID idAlvo, Usuario usuarioLogado) {
         if (!idAlvo.equals(usuarioLogado.getIdUsuario())) {
             throw new AccessDeniedException("Acesso negado: O recurso solicitado pertence a outro usuário.");
         }
     }
 
     public RegistroTreino cadastrar(DadosCadastroRegistroTreino dados, Usuario usuarioLogado) {
-        validarIdor(dados.idUsuario(), usuarioLogado);
+        validarUsuario(dados.idUsuario(), usuarioLogado);
 
         var treino = treinoRepository.getReferenceById(dados.idTreino());
         var usuario = usuarioRepository.getReferenceById(dados.idUsuario());
@@ -45,26 +45,26 @@ public class RegistroTreinoService {
     }
 
     public Page<DadosListagemRegistroTreino> listar(UUID idUsuario, Pageable paginacao, Usuario usuarioLogado) {
-        validarIdor(idUsuario, usuarioLogado);
+        validarUsuario(idUsuario, usuarioLogado);
         return repository.findAllByUsuarioIdUsuario(idUsuario, paginacao).map(DadosListagemRegistroTreino::new);
     }
 
     public RegistroTreino detalhar(UUID idRegistro, Usuario usuarioLogado) {
         var registroTreino = repository.getReferenceById(idRegistro);
-        validarIdor(registroTreino.getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(registroTreino.getUsuario().getIdUsuario(), usuarioLogado);
         return registroTreino;
     }
 
     public RegistroTreino atualizar(DadosAtualizacaoRegistroTreino dados, Usuario usuarioLogado) {
         var registroTreino = repository.getReferenceById(dados.idRegistro());
-        validarIdor(registroTreino.getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(registroTreino.getUsuario().getIdUsuario(), usuarioLogado);
         registroTreino.atualizar(dados);
         return registroTreino;
     }
 
     public void deletar(UUID idRegistro, Usuario usuarioLogado) {
         var registroTreino = repository.getReferenceById(idRegistro);
-        validarIdor(registroTreino.getUsuario().getIdUsuario(), usuarioLogado);
+        validarUsuario(registroTreino.getUsuario().getIdUsuario(), usuarioLogado);
         repository.delete(registroTreino);
     }
 }

@@ -47,7 +47,7 @@ public class OpenFoodFactsService {
             if (e instanceof ValidacaoException) {
                 throw e;
             }
-            throw new RuntimeException("Erro ao buscar informações nutricionais do produto: " + e.getMessage());
+            throw new ValidacaoException("Erro ao buscar informacoes nutricionais do produto.");
         }
     }
 
