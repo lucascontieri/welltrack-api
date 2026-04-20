@@ -17,6 +17,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class RefeicaoAlimento {
 
     @EmbeddedId

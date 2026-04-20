@@ -17,6 +17,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class TreinoExercicio {
 
     @EmbeddedId
@@ -69,6 +70,10 @@ public class TreinoExercicio {
         }
     }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @EqualsAndHashCode
     @Embeddable
     public static class idTreinoExercicio implements Serializable {
 
