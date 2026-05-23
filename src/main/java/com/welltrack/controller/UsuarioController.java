@@ -28,21 +28,23 @@ public class UsuarioController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<DadosDetalhamentoUsuario> cadastrar(@RequestBody @Valid DadosCadastroUsuario dados, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<DadosDetalhamentoUsuario> cadastrar(@RequestBody @Valid DadosCadastroUsuario dados,
+            UriComponentsBuilder uriBuilder) {
         var usuario = service.cadastrar(dados);
         var uri = uriBuilder.path("/usuario/{id}").buildAndExpand(usuario.getIdUsuario()).toUri();
         return ResponseEntity.created(uri).body(new DadosDetalhamentoUsuario(usuario));
     }
 
     @GetMapping
-    public ResponseEntity<?> listar(@PageableDefault(size = 10, sort = {"nome"}) Pageable paginacao) {
+    public ResponseEntity<?> listar(@PageableDefault(size = 10, sort = { "nome" }) Pageable paginacao) {
         var page = service.listar(paginacao);
         return ResponseEntity.ok(page);
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity<DadosDetalhamentoUsuario> atualizar(@RequestBody @Valid DadosAtualizacaoUsuario dados, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<DadosDetalhamentoUsuario> atualizar(@RequestBody @Valid DadosAtualizacaoUsuario dados,
+            @AuthenticationPrincipal Usuario usuarioLogado) {
         var usuario = service.atualizar(dados, usuarioLogado);
         return ResponseEntity.ok(new DadosDetalhamentoUsuario(usuario));
     }
@@ -55,7 +57,8 @@ public class UsuarioController {
     }
 
     @GetMapping("/{idUsuario}")
-    public ResponseEntity<DadosDetalhamentoUsuario> detalhar(@PathVariable UUID idUsuario, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<DadosDetalhamentoUsuario> detalhar(@PathVariable UUID idUsuario,
+            @AuthenticationPrincipal Usuario usuarioLogado) {
         var usuario = service.detalhar(idUsuario, usuarioLogado);
         return ResponseEntity.ok(new DadosDetalhamentoUsuario(usuario));
     }

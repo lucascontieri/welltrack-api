@@ -23,19 +23,27 @@ public class SecurityConfigurations {
     @Autowired
     private SecurityFilter securityFilter;
 
+    @Autowired
+    private SwaggerIpAuthorizationManager swaggerIpAuthorizationManager;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable()) // Desativa CSRF (recomendado para APIs REST)
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Configura autenticação sem estado (JWT)
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Configura
+                                                                                                    // autenticação sem
+                                                                                                    // estado (JWT)
                 .authorizeHttpRequests(req -> req
                         .requestMatchers(HttpMethod.POST, "/login").permitAll() // Permite acesso público ao login
-                        .requestMatchers(HttpMethod.POST, "/login/google").permitAll() // Permite acesso público ao login com Google
+                        .requestMatchers(HttpMethod.POST, "/login/google").permitAll() // Permite acesso público ao
+                                                                                       // login com Google
                         .requestMatchers(HttpMethod.POST, "/login/solicitar-recuperacao-senha").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login/redefinir-senha").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuario").permitAll() // Permite cadastro público de usuários
+                        .requestMatchers(HttpMethod.POST, "/usuario").permitAll() // Permite cadastro público de
+                                                                                  // usuários
                         .requestMatchers(HttpMethod.GET, "/usuario/confirmar-email").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuario/reenviar-verificacao").permitAll()
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**")
+                        .access(swaggerIpAuthorizationManager)
                         .requestMatchers(HttpMethod.DELETE, "/{idUsuario}").hasRole("ADMIN")
                         .anyRequest().authenticated() // Qualquer outra requisição precisa estar autenticada
                 )

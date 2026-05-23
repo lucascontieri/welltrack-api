@@ -11,23 +11,21 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SpringDocConfigurations {
 
-    @Bean
-    public OpenAPI customOpenAPI() {
-        return new OpenAPI()
-                .components(new Components()
-                        .addSecuritySchemes("bearer-key",
-                                new SecurityScheme()
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")))
-                .info(new Info()
-                        .title("Welltrack API")
-                        .description("API Rest da aplicação Welltrack")
-                        .contact(new Contact()
-                                .name("Lucas Silva Contieri")
-                                .email("lucas.contieri@welltrack.com")
-                        )
-                );
-    }
+        @Bean
+        public OpenAPI customOpenAPI() {
+                return new OpenAPI()
+                                .components(new Components()
+                                                .addSecuritySchemes("bearer-key",
+                                                                new SecurityScheme()
+                                                                                .type(SecurityScheme.Type.HTTP)
+                                                                                .scheme("bearer")
+                                                                                .bearerFormat("JWT")))
+                                .info(new Info()
+                                                .title("Welltrack API")
+                                                .description("API Rest da aplicação Welltrack")
+                                                .contact(new Contact()
+                                                                .name("Lucas Silva Contieri")
+                                                                .email("lucas.contieri@welltrack.com")));
+        }
 
 }

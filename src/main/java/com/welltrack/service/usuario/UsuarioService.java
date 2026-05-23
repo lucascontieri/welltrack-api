@@ -31,7 +31,8 @@ public class UsuarioService {
 
     private void validarAutorizacao(UUID idAlvo, Usuario usuarioLogado) {
         if (!idAlvo.equals(usuarioLogado.getIdUsuario()) && !TipoUsuario.ADMIN.equals(usuarioLogado.getTipoUsuario())) {
-            throw new AccessDeniedException("Acesso negado: Voce nao tem permissao para acessar ou modificar os dados deste usuario.");
+            throw new AccessDeniedException(
+                    "Acesso negado: Voce nao tem permissao para acessar ou modificar os dados deste usuario.");
         }
     }
 
@@ -42,7 +43,7 @@ public class UsuarioService {
 
         String emailNormalizado = EmailUtils.normalizar(dados.email());
         var usuarioExistente = repository.findOptionalByEmail(emailNormalizado);
-        
+
         if (usuarioExistente.isPresent()) {
             var usuario = usuarioExistente.get();
             if (usuario.getGoogleId() != null && usuario.getSenha() == null) {
