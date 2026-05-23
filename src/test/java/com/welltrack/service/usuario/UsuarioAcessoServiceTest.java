@@ -67,7 +67,7 @@ class UsuarioAcessoServiceTest {
         verify(tokenRecuperacaoRepository)
                 .deleteByUsuarioAndTipoAndUsadoFalse(usuario, TipoTokenRecuperacao.VERIFICACAO_EMAIL);
         verify(tokenRecuperacaoRepository).save(any(TokenRecuperacao.class));
-        verify(emailService).enviarHtml(eq("usuario@email.com"), contains("Confirme"), contains("Confirmar e-mail"));
+        verify(emailService).enviarHtml(eq("usuario@email.com"), contains("Confirme"), contains("Confirmar E-mail"));
     }
 
     @Test
@@ -86,7 +86,7 @@ class UsuarioAcessoServiceTest {
         verify(tokenRecuperacaoRepository)
                 .deleteByUsuarioAndTipoAndUsadoFalse(usuario, TipoTokenRecuperacao.RECUPERACAO_SENHA);
         verify(tokenRecuperacaoRepository).save(any(TokenRecuperacao.class));
-        verify(emailService).enviarHtml(eq("usuario@email.com"), contains("Redefinição"), contains("Redefinir senha"));
+        verify(emailService).enviarHtml(eq("usuario@email.com"), contains("Redefinição"), contains("Redefinir Senha"));
     }
 
     @Test

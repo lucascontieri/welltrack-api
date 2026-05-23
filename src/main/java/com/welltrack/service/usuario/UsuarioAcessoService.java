@@ -24,7 +24,7 @@ public class UsuarioAcessoService {
 
     private static final int EMAIL_VERIFICACAO_VALIDADE_HORAS = 48;
     private static final int RECUPERACAO_VALIDADE_MINUTOS = 60;
-    private static final String ESTILO_BOTAO = "display:inline-block;padding:14px 24px;background:#0f766e;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:600;";
+    private static final String ESTILO_BOTAO = "display:inline-block;padding:14px 32px;background-color:#0f766e;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:600;font-size:15px;box-shadow:0 4px 6px -1px rgba(15,118,110,0.15)";
 
     @Autowired
     private TokenRecuperacaoRepository tokenRecuperacaoRepository;
@@ -66,13 +66,14 @@ public class UsuarioAcessoService {
         String link = publicBaseUrl.replaceAll("/$", "") + "/usuario/confirmar-email?token=" + token;
         String nomeSeguro = HtmlUtils.htmlEscape(usuario.getNome());
         String html = """
-                <p>Olá, %s.</p>
-                <p>Confirme seu e-mail para ativar sua conta no WellTrack.</p>
-                <p style="margin:28px 0">
-                  <a href="%s" style="%s">Confirmar e-mail</a>
-                </p>
-                <p>O link expira em %d horas.</p>
-                <p>Se voce não criou esta conta, ignore este e-mail.</p>
+                <h2 style="color:#0f172a;margin-top:0;font-size:20px;font-weight:700;line-height:1.3">Confirme seu endereço de e-mail</h2>
+                <p>Olá, <strong>%s</strong>.</p>
+                <p>Obrigado por se cadastrar no <strong>WellTrack</strong>! Para concluir a ativação de sua conta e começar a acompanhar sua saúde, clique no botão abaixo para confirmar seu e-mail:</p>
+                <div style="text-align:center;margin:32px 0">
+                  <a href="%s" style="%s">Confirmar E-mail</a>
+                </div>
+                <p style="font-size:14px;color:#64748b;margin:0">Este link de ativação é válido por <strong>%d horas</strong>.</p>
+                <p style="font-size:14px;color:#94a3b8;margin:24px 0 0 0;border-top:1px solid #f1f5f9;padding-top:16px">Se você não criou uma conta no WellTrack, por favor desconsidere este e-mail.</p>
                 """.formatted(nomeSeguro, link, ESTILO_BOTAO, EMAIL_VERIFICACAO_VALIDADE_HORAS);
 
         emailService.enviarHtml(usuario.getEmail(), "Confirme seu e-mail - WellTrack", html);
@@ -137,13 +138,14 @@ public class UsuarioAcessoService {
         String link = publicBaseUrl.replaceAll("/$", "") + "/redefinir-senha?token=" + token;
         String nomeSeguro = HtmlUtils.htmlEscape(usuario.getNome());
         String html = """
-                <p>Olá, %s.</p>
-                <p>Recebemos um pedido para redefinir sua senha no WellTrack.</p>
-                <p style="margin:28px 0">
-                  <a href="%s" style="%s">Redefinir senha</a>
-                </p>
-                <p>O link expira em %d minutos.</p>
-                <p>Se você não solicitou, ignore este e-mail.</p>
+                <h2 style="color:#0f172a;margin-top:0;font-size:20px;font-weight:700;line-height:1.3">Recuperação de Senha</h2>
+                <p>Olá, <strong>%s</strong>.</p>
+                <p>Recebemos uma solicitação para redefinir a senha da sua conta no <strong>WellTrack</strong>. Clique no botão abaixo para escolher uma nova senha:</p>
+                <div style="text-align:center;margin:32px 0">
+                  <a href="%s" style="%s">Redefinir Senha</a>
+                </div>
+                <p style="font-size:14px;color:#64748b;margin:0">Por motivos de segurança, este link é válido por apenas <strong>%d minutos</strong>.</p>
+                <p style="font-size:14px;color:#94a3b8;margin:24px 0 0 0;border-top:1px solid #f1f5f9;padding-top:16px">Se você não solicitou essa redefinição, nenhuma ação adicional é necessária e você pode desconsiderar este e-mail com segurança.</p>
                 """.formatted(nomeSeguro, link, ESTILO_BOTAO, RECUPERACAO_VALIDADE_MINUTOS);
 
         emailService.enviarHtml(usuario.getEmail(), "Redefinição de senha - WellTrack", html);
@@ -167,16 +169,17 @@ public class UsuarioAcessoService {
     private void enviarConfirmacaoSenhaAlterada(Usuario usuario) {
         String nomeSeguro = HtmlUtils.htmlEscape(usuario.getNome());
         String html = """
-                <h2 style="color:#0f172a;margin-top:0">Senha alterada com sucesso!</h2>
-                <p>Ola, %s.</p>
-                <p>Este e-mail e para confirmar que a senha da sua conta no <strong>WellTrack</strong> foi alterada recentemente.</p>
-                <div style="margin:32px 0;padding:20px;background:#f8fafc;border-radius:12px;border-left:4px solid #0f766e">
-                  <p style="margin:0;font-size:14px;color:#475569">
-                    Caso <strong>não</strong> tenha sido voce quem realizou essa alteração, entre em contato imediatamente com o nosso suporte.
+                <h2 style="color:#0f172a;margin-top:0;font-size:20px;font-weight:700;line-height:1.3">Senha alterada com sucesso!</h2>
+                <p>Olá, <strong>%s</strong>.</p>
+                <p>Este e-mail é para confirmar que a senha da sua conta no <strong>WellTrack</strong> foi alterada recentemente.</p>
+                <div style="margin:28px 0;padding:20px;background-color:#fff1f2;border-radius:12px;border-left:4px solid #f43f5e">
+                  <p style="margin:0;font-size:14px;color:#be123c;line-height:1.6">
+                    <strong>Atenção:</strong> Caso <strong>não</strong> tenha sido você quem realizou essa alteração, entre em contato imediatamente com o nosso suporte.
                   </p>
                 </div>
                 <p>Se foi você, pode ignorar este aviso e continuar usando sua conta normalmente.</p>
-                """.formatted(nomeSeguro);
+                """
+                .formatted(nomeSeguro);
 
         emailService.enviarHtml(usuario.getEmail(), "Sua senha foi alterada - WellTrack", html);
     }
