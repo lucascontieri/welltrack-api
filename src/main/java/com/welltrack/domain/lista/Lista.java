@@ -12,11 +12,10 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "Lista")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "idLista")
+@EqualsAndHashCode(of = "id_lista")
 public class Lista {
 
     @Id

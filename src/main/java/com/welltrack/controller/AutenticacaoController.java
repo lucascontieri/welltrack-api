@@ -6,7 +6,6 @@ import com.welltrack.dto.usuario.DadosSolicitarRecuperacaoSenha;
 import com.welltrack.dto.usuario.DadosAutenticacao;
 import com.welltrack.dto.usuario.DadosGoogleAuth;
 import com.welltrack.security.DadosTokenJWT;
-import com.welltrack.security.TokenService;
 import com.welltrack.service.usuario.UsuarioAcessoService;
 import com.welltrack.service.usuario.AutenticacaoService;
 import com.welltrack.service.usuario.GoogleAuthService;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-
 
 @RestController
 @RequestMapping("/login")
@@ -52,7 +49,8 @@ public class AutenticacaoController {
 
     @PostMapping("/solicitar-recuperacao-senha")
     @Transactional
-    public ResponseEntity<DadosMensagemResposta> solicitarRecuperacaoSenha(@RequestBody @Valid DadosSolicitarRecuperacaoSenha dados) {
+    public ResponseEntity<DadosMensagemResposta> solicitarRecuperacaoSenha(
+            @RequestBody @Valid DadosSolicitarRecuperacaoSenha dados) {
         usuarioAcessoService.solicitarRecuperacaoSenha(dados.email());
         return ResponseEntity.ok(new DadosMensagemResposta(
                 "Se o e-mail estiver cadastrado, voce recebera instrucoes para redefinir a senha."));
