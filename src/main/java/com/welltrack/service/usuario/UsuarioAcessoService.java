@@ -340,7 +340,152 @@ public class UsuarioAcessoService {
         emailService.enviarHtml(usuario.getEmail(), "Sua senha foi alterada - WellTrack", html);
     }
 
-    // ─── 6. Páginas HTML de confirmação ───────────────────────────────
+    // ─── 6. Definição de senha (usuários Google-only) ─────────────────
+
+    @Transactional
+    public void solicitarDefinicaoSenha(Usuario usuario) {
+        if (usuario.getSenha() != null) {
+            throw new ValidacaoException("Sua conta já possui uma senha definida. Use a recuperação de senha caso queira alterá-la.");
+        }
+
+        if (usuario.getGoogleId() == null) {
+            throw new ValidacaoException("Esta funcionalidade é exclusiva para contas vinculadas ao Google.");
+        }
+
+        tokenRecuperacaoRepository.deleteByUsuarioAndTipoAndUsadoFalse(usuario, TipoTokenRecuperacao.DEFINICAO_SENHA);
+        String codigo = novoCodigoSeisDigitos();
+        LocalDateTime agora = LocalDateTime.now();
+        var registro = new TokenRecuperacao(
+                null,
+                codigo,
+                agora.plusMinutes(RECUPERACAO_VALIDADE_MINUTOS),
+                false,
+                0,
+                agora,
+                TipoTokenRecuperacao.DEFINICAO_SENHA,
+                usuario);
+        tokenRecuperacaoRepository.save(registro);
+
+        String nomeSeguro = HtmlUtils.htmlEscape(usuario.getNome());
+        String html = """
+                <h2 style="color:#0f172a;margin-top:0;font-size:22px;font-weight:700;line-height:1.3">
+                  Definição de Senha
+                </h2>
+                <p>Olá, <strong>%s</strong>!</p>
+                <p>Recebemos uma solicitação para definir uma senha na sua conta do <strong>WellTrack</strong>. Use o código abaixo no aplicativo para continuar:</p>
+                <div style="text-align:center;margin:32px 0;padding:32px;background:linear-gradient(135deg,#f8fafc 0%%,#f1f5f9 100%%);border-radius:16px;border:2px dashed #cbd5e1">
+                  <p style="margin:0 0 8px 0;font-size:13px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:2px">Seu código de verificação</p>
+                  <p style="margin:0;font-size:40px;font-weight:800;letter-spacing:12px;color:#0f766e;font-family:'Courier New',Courier,monospace">%s</p>
+                </div>
+                <div style="margin:24px 0;padding:16px 20px;background-color:#fffbeb;border-radius:10px;border-left:4px solid #f59e0b">
+                  <p style="margin:0;font-size:14px;color:#92400e;line-height:1.6">
+                    <strong>Atenção:</strong> Por motivos de segurança, este código é válido por no máximo <strong>%d minutos</strong> e pode ser usado uma única vez. Após esse período, será necessário solicitar um novo código.
+                  </p>
+                </div>
+                <p style="font-size:13px;color:#94a3b8;margin:24px 0 0 0;border-top:1px solid #f1f5f9;padding-top:16px">Se você não solicitou essa definição de senha, por favor desconsidere este e-mail.</p>
+                """.formatted(nomeSeguro, codigo, RECUPERACAO_VALIDADE_MINUTOS);
+
+        emailService.enviarHtml(usuario.getEmail(), "Código para definição de senha - WellTrack", html);
+    }
+
+    @Transactional
+    public String validarCodigoDefinicaoSenha(Usuario usuario, String codigo) {
+        var registroOpt = tokenRecuperacaoRepository
+                .findByUsuarioAndTipoAndUsadoFalseAndExpiracaoAfter(
+                        usuario, TipoTokenRecuperacao.DEFINICAO_SENHA, LocalDateTime.now());
+
+        if (registroOpt.isEmpty()) {
+            throw new ValidacaoException("Código inválido ou expirado.");
+        }
+
+        var registro = registroOpt.get();
+
+        if (registro.getTentativas() >= MAX_TENTATIVAS_CODIGO) {
+            registro.marcarComoUsado();
+            tokenRecuperacaoRepository.save(registro);
+            throw new ValidacaoException("Número máximo de tentativas excedido. Solicite um novo código.");
+        }
+
+        if (!registro.getToken().equals(codigo)) {
+            registro.incrementarTentativas();
+            tokenRecuperacaoRepository.save(registro);
+
+            int restantes = MAX_TENTATIVAS_CODIGO - registro.getTentativas();
+            if (restantes <= 0) {
+                registro.marcarComoUsado();
+                tokenRecuperacaoRepository.save(registro);
+                throw new ValidacaoException("Número máximo de tentativas excedido. Solicite um novo código.");
+            }
+
+            throw new ValidacaoException("Código incorreto. Você ainda tem " + restantes + " tentativa(s).");
+        }
+
+        registro.marcarComoUsado();
+        tokenRecuperacaoRepository.save(registro);
+
+        String tokenDefinicao = novoTokenSeguro();
+        LocalDateTime agora = LocalDateTime.now();
+        var registroDefinicao = new TokenRecuperacao(
+                null,
+                tokenDefinicao,
+                agora.plusMinutes(15),
+                false,
+                0,
+                agora,
+                TipoTokenRecuperacao.DEFINICAO_SENHA,
+                usuario);
+        tokenRecuperacaoRepository.save(registroDefinicao);
+
+        return tokenDefinicao;
+    }
+
+    @Transactional
+    public void definirSenha(String token, String novaSenha, Usuario usuario) {
+        var registro = tokenRecuperacaoRepository
+                .findByTokenAndUsadoFalseAndExpiracaoAfterAndTipo(
+                        token, LocalDateTime.now(), TipoTokenRecuperacao.DEFINICAO_SENHA)
+                .orElseThrow(() -> new ValidacaoException("Token inválido ou expirado."));
+
+        if (!registro.getUsuario().getIdUsuario().equals(usuario.getIdUsuario())) {
+            throw new ValidacaoException("Token inválido ou expirado.");
+        }
+
+        usuario.setSenha(passwordEncoder.encode(novaSenha));
+        registro.marcarComoUsado();
+        usuarioRepository.save(usuario);
+        tokenRecuperacaoRepository.save(registro);
+
+        enviarConfirmacaoSenhaDefinida(usuario);
+    }
+
+    private void enviarConfirmacaoSenhaDefinida(Usuario usuario) {
+        String nomeSeguro = HtmlUtils.htmlEscape(usuario.getNome());
+        String html = """
+                <h2 style="color:#0f172a;margin-top:0;font-size:22px;font-weight:700;line-height:1.3">
+                  Senha definida com sucesso!
+                </h2>
+                <p>Olá, <strong>%s</strong>!</p>
+                <p>Sua senha foi definida com sucesso no <strong>WellTrack</strong>. Agora você pode fazer login tanto pelo <strong>Google</strong> quanto por <strong>e-mail e senha</strong>.</p>
+                <div style="text-align:center;margin:32px 0;padding:28px;background:linear-gradient(135deg,#f0fdfa 0%%,#ccfbf1 100%%);border-radius:16px;border:1px solid #99f6e4">
+                  <p style="margin:0;font-size:18px;font-weight:700;color:#0f766e">Login duplo ativado!</p>
+                  <p style="margin:8px 0 0 0;font-size:14px;color:#115e59">Você pode entrar pelo Google ou com e-mail e senha.</p>
+                </div>
+                <div style="margin:24px 0;padding:16px 20px;background-color:#f8fafc;border-radius:10px;border-left:4px solid #0f766e">
+                  <p style="margin:0;font-size:14px;color:#334155;line-height:1.6">
+                    <strong>Informações da conta:</strong><br>
+                    E-mail: %s<br>
+                    Login por e-mail/senha: ativado<br>
+                    Login por Google: ativado
+                  </p>
+                </div>
+                <p style="font-size:13px;color:#94a3b8;margin:24px 0 0 0;border-top:1px solid #f1f5f9;padding-top:16px">Se você não realizou essa ação, entre em contato imediatamente com o nosso suporte.</p>
+                """
+                .formatted(nomeSeguro, HtmlUtils.htmlEscape(usuario.getEmail()));
+
+        emailService.enviarHtml(usuario.getEmail(), "Senha definida com sucesso - WellTrack", html);
+    }
+
+    // ─── 7. Páginas HTML de confirmação ───────────────────────────────
 
     public String montarPaginaHtmlConfirmacaoSucesso(Usuario usuario) {
         String nomeSeguro = HtmlUtils.htmlEscape(usuario.getNome());
