@@ -49,6 +49,10 @@ public class TokenRecuperacao {
         this.usado = true;
     }
 
+    public void incrementarTentativas() {
+        this.tentativas++;
+    }
+
     public void atualizar(com.welltrack.dto.tokenrecuperacao.DadosAtualizacaoTokenRecuperacao dados) {
         if (dados.token() != null) {
             this.token = dados.token();

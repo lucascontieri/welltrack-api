@@ -244,9 +244,11 @@ public class UsuarioAcessoService {
         }
 
         Usuario usuario = opt.get();
+
+        // Busca o token de recuperação ativo pelo USUÁRIO (não pelo código)
         var registroOpt = tokenRecuperacaoRepository
-                .findByTokenAndUsadoFalseAndExpiracaoAfterAndTipo(
-                        codigo, LocalDateTime.now(), TipoTokenRecuperacao.RECUPERACAO_SENHA);
+                .findByUsuarioAndTipoAndUsadoFalseAndExpiracaoAfter(
+                        usuario, TipoTokenRecuperacao.RECUPERACAO_SENHA, LocalDateTime.now());
 
         if (registroOpt.isEmpty()) {
             throw new ValidacaoException("Código inválido ou expirado.");
@@ -254,16 +256,26 @@ public class UsuarioAcessoService {
 
         var registro = registroOpt.get();
 
-        // Verifica se o token pertence ao usuário correto
-        if (!registro.getUsuario().getIdUsuario().equals(usuario.getIdUsuario())) {
-            throw new ValidacaoException("Código inválido ou expirado.");
-        }
-
-        // Controle de tentativas
+        // Controle de tentativas — verifica ANTES de comparar o código
         if (registro.getTentativas() >= MAX_TENTATIVAS_CODIGO) {
             registro.marcarComoUsado();
             tokenRecuperacaoRepository.save(registro);
             throw new ValidacaoException("Número máximo de tentativas excedido. Solicite um novo código.");
+        }
+
+        // Compara o código informado com o armazenado
+        if (!registro.getToken().equals(codigo)) {
+            registro.incrementarTentativas();
+            tokenRecuperacaoRepository.save(registro);
+
+            int restantes = MAX_TENTATIVAS_CODIGO - registro.getTentativas();
+            if (restantes <= 0) {
+                registro.marcarComoUsado();
+                tokenRecuperacaoRepository.save(registro);
+                throw new ValidacaoException("Número máximo de tentativas excedido. Solicite um novo código.");
+            }
+
+            throw new ValidacaoException("Código incorreto. Você ainda tem " + restantes + " tentativa(s).");
         }
 
         // Código válido — marcar como usado e gerar token seguro para redefinição

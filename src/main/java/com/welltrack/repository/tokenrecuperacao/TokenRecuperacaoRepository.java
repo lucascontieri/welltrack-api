@@ -19,5 +19,8 @@ public interface TokenRecuperacaoRepository extends JpaRepository<TokenRecuperac
             String token, LocalDateTime agora, TipoTokenRecuperacao tipo);
 
     void deleteByUsuarioAndTipoAndUsadoFalse(Usuario usuario, TipoTokenRecuperacao tipo);
+
+    Optional<TokenRecuperacao> findByUsuarioAndTipoAndUsadoFalseAndExpiracaoAfter(
+            Usuario usuario, TipoTokenRecuperacao tipo, LocalDateTime agora);
 }
 
