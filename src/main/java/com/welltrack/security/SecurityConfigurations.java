@@ -38,6 +38,7 @@ public class SecurityConfigurations {
                                                                                        // login com Google
                         .requestMatchers(HttpMethod.POST, "/login/solicitar-recuperacao-senha").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login/redefinir-senha").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login/validar-codigo-recuperacao").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuario").permitAll() // Permite cadastro público de
                                                                                   // usuários
                         .requestMatchers(HttpMethod.GET, "/usuario/confirmar-email").permitAll()

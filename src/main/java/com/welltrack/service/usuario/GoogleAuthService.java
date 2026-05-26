@@ -10,6 +10,7 @@ import com.welltrack.repository.usuario.UsuarioRepository;
 import com.welltrack.util.EmailUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,6 +22,10 @@ public class GoogleAuthService {
 
     @Autowired
     private UsuarioRepository repository;
+
+    @Autowired
+    @Lazy
+    private UsuarioAcessoService usuarioAcessoService;
 
     @Value("${api.google.client-id}")
     private String googleClientId;
@@ -43,11 +48,15 @@ public class GoogleAuthService {
             var usuario = usuarioPorEmail.get();
             usuario.setGoogleId(googleId);
             usuario.setEmailVerificado(true);
-            return repository.save(usuario);
+            var salvo = repository.save(usuario);
+            usuarioAcessoService.enviarNotificacaoVinculacao(salvo);
+            return salvo;
         }
 
         var novoUsuario = new Usuario(nome, email, googleId, picture);
-        return repository.save(novoUsuario);
+        var salvo = repository.save(novoUsuario);
+        usuarioAcessoService.enviarBoasVindasGoogle(salvo);
+        return salvo;
     }
 
     private GoogleIdToken.Payload verificarToken(String idTokenString) {

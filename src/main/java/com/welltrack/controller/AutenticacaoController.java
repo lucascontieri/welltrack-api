@@ -5,6 +5,8 @@ import com.welltrack.dto.usuario.DadosRedefinirSenha;
 import com.welltrack.dto.usuario.DadosSolicitarRecuperacaoSenha;
 import com.welltrack.dto.usuario.DadosAutenticacao;
 import com.welltrack.dto.usuario.DadosGoogleAuth;
+import com.welltrack.dto.usuario.DadosTokenRedefinicao;
+import com.welltrack.dto.usuario.DadosValidarCodigoRecuperacao;
 import com.welltrack.security.DadosTokenJWT;
 import com.welltrack.service.usuario.UsuarioAcessoService;
 import com.welltrack.service.usuario.AutenticacaoService;
@@ -62,5 +64,13 @@ public class AutenticacaoController {
         usuarioAcessoService.redefinirSenha(dados.token(), dados.novaSenha());
         return ResponseEntity.ok(new DadosMensagemResposta(
                 "Sua senha foi redefinida com sucesso. Um e-mail de confirmacao foi enviado para voce."));
+    }
+
+    @PostMapping("/validar-codigo-recuperacao")
+    @Transactional
+    public ResponseEntity<DadosTokenRedefinicao> validarCodigoRecuperacao(
+            @RequestBody @Valid DadosValidarCodigoRecuperacao dados) {
+        String tokenRedefinicao = usuarioAcessoService.validarCodigoRecuperacao(dados.email(), dados.codigo());
+        return ResponseEntity.ok(new DadosTokenRedefinicao(tokenRedefinicao));
     }
 }
