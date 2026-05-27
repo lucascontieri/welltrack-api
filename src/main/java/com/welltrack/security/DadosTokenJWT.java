@@ -1,4 +1,6 @@
 package com.welltrack.security;
 
-public record DadosTokenJWT(String token) {
+import java.util.UUID;
+
+public record DadosTokenJWT(String token, UUID idUsuario) {
 }

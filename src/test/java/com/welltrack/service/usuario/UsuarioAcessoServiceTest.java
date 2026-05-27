@@ -86,7 +86,7 @@ class UsuarioAcessoServiceTest {
         verify(tokenRecuperacaoRepository)
                 .deleteByUsuarioAndTipoAndUsadoFalse(usuario, TipoTokenRecuperacao.RECUPERACAO_SENHA);
         verify(tokenRecuperacaoRepository).save(any(TokenRecuperacao.class));
-        verify(emailService).enviarHtml(eq("usuario@email.com"), contains("Redefinição"), contains("Redefinir Senha"));
+        verify(emailService).enviarHtml(eq("usuario@email.com"), contains("recuperação"), contains("Recuperação de Senha"));
     }
 
     @Test

@@ -52,8 +52,9 @@ public class AutenticacaoService implements UserDetailsService {
         var authenticationToken = new UsernamePasswordAuthenticationToken(email, dados.senha());
         var authentication = authenticationManager.authenticate(authenticationToken);
 
-        var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
-        return new DadosTokenJWT(tokenJWT);
+        var usuario = (Usuario) authentication.getPrincipal();
+        var tokenJWT = tokenService.gerarToken(usuario);
+        return new DadosTokenJWT(tokenJWT, usuario.getIdUsuario());
     }
 
     public String gerarToken(Usuario usuario) {

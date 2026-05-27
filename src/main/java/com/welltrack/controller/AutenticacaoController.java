@@ -46,7 +46,7 @@ public class AutenticacaoController {
         var usuario = googleAuthService.autenticarComGoogle(dados.token());
         var tokenJWT = autenticacaoService.gerarToken(usuario);
 
-        return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
+        return ResponseEntity.ok(new DadosTokenJWT(tokenJWT, usuario.getIdUsuario()));
     }
 
     @PostMapping("/solicitar-recuperacao-senha")
