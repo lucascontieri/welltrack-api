@@ -1,0 +1,1 @@
+ALTER TABLE tarefa ALTER COLUMN imagem_tarefa TYPE TEXT;
